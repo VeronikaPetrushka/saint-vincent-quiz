@@ -1,0 +1,1 @@
+// daily bonuses when user opens the app
