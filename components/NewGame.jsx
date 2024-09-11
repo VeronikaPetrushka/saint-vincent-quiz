@@ -1,35 +1,41 @@
-// 6 buttons -> different topics -> first unlocked by default / the rest unclock by completing
-
-// Genius button
 // Expert button 
 
-import React, {useState} from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native"
+import React from 'react';
+import { SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from '@react-navigation/native';
-import quiz from '../constants/quiz.js'
+import { useQuiz } from '../context/context.js';
+import quiz from '../constants/quiz.js';
 
 const NewGame = () => {
     const navigation = useNavigation();
-    const [enabledTopics, setEnabledTopics] = useState([true, false, false, false, false, false]);
+    const { enabledTopics } = useQuiz();
 
     const handleButtonPress = (index) => {
         if (enabledTopics[index]) {
-            navigation.navigate('QuizScreen', { topic: quiz[index] });
-        }
-
-        if (index < enabledTopics.length - 1) {
-            setEnabledTopics((prev) =>
-                prev.map((enabled, i) => (i <= index + 1 ? true : enabled))
-            );
+            navigation.navigate('QuizScreen', { topicIndex: index });
         }
     };
 
+    const handleGeniusPress = () => {
+        navigation.navigate('QuizGeniusScreen');
+    };
+
+    const handleExpertPress = () => {
+        navigation.navigate('QuizExpertScreen');
+    };
+
+    const allTopicsEnabled = enabledTopics.length === 6 && enabledTopics.every(enabled => enabled);
 
     return (
         <SafeAreaView style={styles.container}>
             <View style={styles.topicBtnContainer}>
                 {quiz.map((item, index) => (
-                    <TouchableOpacity key={index} style={styles.buttonWrapper} onPress={() => handleButtonPress(index)} disabled={!enabledTopics[index]}>
+                    <TouchableOpacity 
+                        key={index} 
+                        style={styles.buttonWrapper} 
+                        onPress={() => handleButtonPress(index)} 
+                        disabled={!enabledTopics[index]}
+                    >
                         {enabledTopics[index] ? (
                             <Text style={styles.buttonText}>{index + 1}</Text>
                         ) : (
@@ -39,16 +45,22 @@ const NewGame = () => {
                 ))}
             </View>
             <View style={styles.modeBtnContainer}>
-                <TouchableOpacity style={styles.modeBtn}>
+                <TouchableOpacity 
+                    style={[styles.modeBtn, { opacity: allTopicsEnabled ? 1 : 0.5 }]} 
+                    onPress={handleGeniusPress}
+                    disabled={!allTopicsEnabled}
+                >
                     <Text style={styles.modeBtnText}>Genius</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modeBtn}>
+                <TouchableOpacity style={styles.modeBtn} onPress={handleExpertPress}>
                     <Text style={styles.modeBtnText}>Expert</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
-    )
+    );
 };
+
+
 
 const styles = {
 

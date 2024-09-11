@@ -1,12 +1,14 @@
 // Background theme image
 // On finish -> topic cards to buy for album
-// Next topic handle
+// highlight correct in green, even when wrong selected
+// Total balance
 
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import { useQuiz } from '../context/context.js';
 
-const Quiz = ({ topic }) => {
+const Quiz = ({ topic, topicIndex }) => {
     const navigation = useNavigation();
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(null);
@@ -15,6 +17,9 @@ const Quiz = ({ topic }) => {
     const [score, setScore] = useState(0);
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
+    const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
+
+    const { unlockNextTopic, enabledTopics, updateTotalScore } = useQuiz();
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
@@ -22,7 +27,6 @@ const Quiz = ({ topic }) => {
             const isCorrect = topic.questions[currentQuestionIndex].options[index] === topic.questions[currentQuestionIndex].answer;
 
             setScore(prevScore => Math.max(0, prevScore + (isCorrect ? 100 : -100)));
-
             setNextEnabled(true);
 
             setTimeout(() => {
@@ -30,6 +34,7 @@ const Quiz = ({ topic }) => {
                     setNextEnabled(true);
                 } else {
                     setShowResult(true);
+                    unlockNextTopic(topicIndex);
                 }
             }, 1500);
         }
@@ -43,6 +48,7 @@ const Quiz = ({ topic }) => {
             setHintApplied(false);
         } else {
             setShowResult(true);
+            unlockNextTopic(topicIndex);
         }
     };
 
@@ -67,15 +73,59 @@ const Quiz = ({ topic }) => {
         setHintModalVisible(false);
     };
 
+    const handleProceedToNextTopic = () => {
+        const nextTopicIndex = topicIndex + 1;
+
+        if (enabledTopics[nextTopicIndex]) {
+            setCurrentQuestionIndex(0);
+            setSelectedOptionIndex(null);
+            setShowResult(false);
+            setNextEnabled(false);
+            setHintApplied(false);
+            setScore(0);
+            setNextLevelModalVisible(false);
+
+            navigation.navigate('QuizScreen', { topicIndex: nextTopicIndex });
+        } else {
+            alert('Next topic is not unlocked yet.');
+        }
+    };
+
+    const nextTopicExists = topicIndex + 1 < enabledTopics.length;
+
     if (showResult) {
+        // Only update the total score with the final score of the current quiz
+        updateTotalScore(score);
+
         return (
             <View style={styles.container}>
                 <Text style={styles.topicName}>Quiz Finished</Text>
                 <Text style={styles.topicName}>{topic.topic}</Text>
                 <Text style={styles.scoreText}>Final Score: {score}</Text>
+                {/* Make sure you have a way to show the total score if needed */}
                 <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
                     <Text style={styles.finishText}>Go back</Text>
                 </TouchableOpacity>
+
+                {nextTopicExists && (
+                    <TouchableOpacity onPress={() => setNextLevelModalVisible(true)}>
+                        <Text style={styles.nextTopicBtnText}>Next</Text>
+                    </TouchableOpacity>
+                )}
+
+                <Modal
+                    transparent={true}
+                    visible={nextLevelModalVisible}
+                    animationType="slide"
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
+                            <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
+                            <Button title="Proceed" onPress={handleProceedToNextTopic} />
+                        </View>
+                    </View>
+                </Modal>
             </View>
         );
     }
@@ -88,14 +138,14 @@ const Quiz = ({ topic }) => {
         <View style={styles.container}>
             <Text style={styles.topicName}>{topic.topic}</Text>
             <View style={styles.scoreContainer}>
-            <Text style={styles.scoreText}>Score: {score}</Text>
-            <TouchableOpacity
-                style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
-                onPress={handleHintPress}
-                disabled={selectedOptionIndex !== null || hintApplied}
-            >
-                <Text style={styles.hintButtonText}>Hint</Text>
-            </TouchableOpacity>
+                <Text style={styles.scoreText}>Score: {score}</Text>
+                <TouchableOpacity
+                    style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
+                    onPress={handleHintPress}
+                    disabled={selectedOptionIndex !== null || hintApplied}
+                >
+                    <Text style={styles.hintButtonText}>Hint</Text>
+                </TouchableOpacity>
             </View>
             <View style={styles.questionContainer}>
                 <Text style={styles.questionText}>{currentQuestion.question}</Text>
@@ -146,6 +196,8 @@ const Quiz = ({ topic }) => {
     );
 };
 
+
+
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 30,
@@ -172,6 +224,7 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 200,
         textAlign: 'center',
+        height: 50
     },
     optionButton: {
         padding: 15,
@@ -254,7 +307,12 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
+    nextTopicBtnText: {
+        fontSize: 20,
+        color: 'blue',
+        textAlign: 'center',
+        marginTop: 20,
+    }
 });
 
 export default Quiz;
-

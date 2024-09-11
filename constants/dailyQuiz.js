@@ -200,3 +200,6 @@ const dailyQuiz = [
         answer: true
     }
 ];
+
+
+export default dailyQuiz;

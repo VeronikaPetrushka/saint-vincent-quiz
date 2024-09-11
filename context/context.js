@@ -1,16 +1,20 @@
+// Total balance
+
 import React, { createContext, useContext, useState } from 'react';
 
 const QuizContext = createContext();
 
 export const QuizProvider = ({ children }) => {
-    const [completedTopicIndex, setCompletedTopicIndex] = useState(null);
+    const [enabledTopics, setEnabledTopics] = useState([true, false, false, false, false, false]);
 
-    const handleComplete = (index) => {
-        setCompletedTopicIndex(index);
+    const unlockNextTopic = (index) => {
+        setEnabledTopics((prev) =>
+            prev.map((enabled, i) => (i === index + 1 ? true : enabled))
+        );
     };
 
     return (
-        <QuizContext.Provider value={{ completedTopicIndex, handleComplete }}>
+        <QuizContext.Provider value={{ enabledTopics, unlockNextTopic }}>
             {children}
         </QuizContext.Provider>
     );

@@ -1,19 +1,20 @@
-// Background image
-
-import { SafeAreaView, View } from "react-native"
-import MainMenu from "../components/MainMenu"
+import React from 'react';
+import { SafeAreaView, View } from "react-native";
+import QuizExpert from '../components/QuizExpert';
 import MenuPanel from "../components/MenuPanel"
 
-const MainMenuScreen = () => {
+const QuizExpertScreen = () => {
+
+
     return (
         <SafeAreaView style={styles.container}>
-            <MainMenu />
+            <QuizExpert />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
         </SafeAreaView>
-    )
-}; 
+    );
+};
 
 const styles = {
     container: {
@@ -24,8 +25,8 @@ const styles = {
     menu: {
         position: 'fixed',
         width: "100%",
-        top: -80
+        top: -100
     }
 }
 
-export default MainMenuScreen;
+export default QuizExpertScreen;

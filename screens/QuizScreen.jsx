@@ -1,15 +1,15 @@
-// Quiz component / maybe conditional rendering depending on mode / prop for difficulty
-// Menu panel component fixed
-
-import { SafeAreaView } from "react-native"
+import React from 'react';
+import { SafeAreaView } from "react-native";
 import Quiz from "../components/Quiz";
+import quiz from '../constants/quiz.js';
 
 const QuizScreen = ({ route }) => {
-    const { topic } = route.params;
+    const { topicIndex } = route.params;
+    const topic = quiz[topicIndex];
 
     return (
         <SafeAreaView>
-            <Quiz topic={topic} />
+            <Quiz topic={topic} topicIndex={topicIndex} />
         </SafeAreaView>
     );
 };
