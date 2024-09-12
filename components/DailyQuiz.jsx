@@ -14,6 +14,7 @@ const DailyQuiz = () => {
     const [quizFinished, setQuizFinished] = useState(false);
     const [nextQuizAvailable, setNextQuizAvailable] = useState(false);
     const [countdown, setCountdown] = useState(0);
+    const [totalBalance, setTotalBalance] = useState(0);
     const intervalRef = useRef(null);
 
     // Time allowed between quizzes (2 minutes = 120000ms)
@@ -21,6 +22,7 @@ const DailyQuiz = () => {
 
     useEffect(() => {
         checkQuizAvailability();
+        loadTotalBalance();
     }, []);
 
     useEffect(() => {
@@ -51,6 +53,26 @@ const DailyQuiz = () => {
         }
     };
 
+    const loadTotalBalance = async () => {
+        try {
+            const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+            if (storedTotalBalance !== null) {
+                setTotalBalance(parseInt(storedTotalBalance, 10));
+            }
+        } catch (error) {
+            console.error('Failed to load total balance:', error);
+        }
+    };
+
+    const updateTotalBalance = async (newBalance) => {
+        try {
+            await AsyncStorage.setItem('totalBalance', newBalance.toString());
+            setTotalBalance(newBalance); // Ensure state is updated after saving
+        } catch (error) {
+            console.error('Failed to save total balance:', error);
+        }
+    };
+
     const formatTime = (seconds) => {
         const minutes = Math.floor(seconds / 60);
         const remainingSeconds = seconds % 60;
@@ -76,8 +98,9 @@ const DailyQuiz = () => {
         }
     };
     
-
     const finishQuiz = async () => {
+        const newBalance = totalBalance + score;
+        await updateTotalBalance(newBalance);
         setQuizFinished(true);
         await AsyncStorage.setItem('lastQuizTime', Date.now().toString());
     };
@@ -100,6 +123,7 @@ const DailyQuiz = () => {
             <View style={styles.container}>
                 <Text style={styles.scoreText}>You have completed all your daily tasks for today. See you tomorrow!</Text>
                 <Text style={styles.scoreText}>Final Score: {score}</Text>
+                <Text style={styles.scoreText}>Total Balance: {totalBalance}</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
                     <Text style={styles.goBackText}>Go Back</Text>
                 </TouchableOpacity>
@@ -137,6 +161,9 @@ const DailyQuiz = () => {
         </View>
     );
 };
+
+
+
 
 const styles = StyleSheet.create({
     container: {

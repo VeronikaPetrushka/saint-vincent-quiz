@@ -1,5 +1,3 @@
-// Expert button 
-
 import React from 'react';
 import { SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native";
 import { useNavigation } from '@react-navigation/native';
@@ -52,7 +50,11 @@ const NewGame = () => {
                 >
                     <Text style={styles.modeBtnText}>Genius</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.modeBtn} onPress={handleExpertPress}>
+                <TouchableOpacity 
+                    style={[styles.modeBtn, { opacity: allTopicsEnabled ? 1 : 0.5 }]} 
+                    onPress={handleExpertPress}
+                    disabled={!allTopicsEnabled}
+                    >
                     <Text style={styles.modeBtnText}>Expert</Text>
                 </TouchableOpacity>
             </View>

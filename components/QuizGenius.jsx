@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import quiz from '../constants/quiz.js';
 import shuffleArray from '../utils/shuffle.js';
 
@@ -17,6 +18,7 @@ const QuizGenius = () => {
     const [timeLeft, setTimeLeft] = useState(120);
     const [correctAnswersInRow, setCorrectAnswersInRow] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
+    const [totalBalance, setTotalBalance] = useState(0);
     const [shuffledQuestions, setShuffledQuestions] = useState(shuffleArray(quiz.flatMap(topic => {
         return topic.questions.map(question => ({ ...question, topic: topic.topic }));
     })));
@@ -37,6 +39,31 @@ const QuizGenius = () => {
 
         return () => clearInterval(timer);
     }, [quizFinished]);
+
+    useEffect(() => {
+        // Load total balance from AsyncStorage when the component mounts
+        const loadTotalBalance = async () => {
+            try {
+                const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+                if (storedTotalBalance !== null) {
+                    setTotalBalance(parseInt(storedTotalBalance, 10));
+                }
+            } catch (error) {
+                console.error('Failed to load total balance:', error);
+            }
+        };
+
+        loadTotalBalance();
+    }, []);
+
+    const updateTotalBalance = async (newBalance) => {
+        try {
+            await AsyncStorage.setItem('totalBalance', newBalance.toString());
+            setTotalBalance(newBalance); // Ensure state is updated after saving
+        } catch (error) {
+            console.error('Failed to save total balance:', error);
+        }
+    };
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
@@ -93,7 +120,9 @@ const QuizGenius = () => {
         setHintModalVisible(false);
     };
 
-    const finishQuiz = () => {
+    const finishQuiz = async () => {
+        const newBalance = totalBalance + score;
+        await updateTotalBalance(newBalance);
         setQuizFinished(true);
     };
 
@@ -126,6 +155,7 @@ const QuizGenius = () => {
                 <Text style={styles.topicText}>Quiz Finished</Text>
                 <Text style={styles.topicText}>You were magnificent, but unfortunately, time has run out!</Text>
                 <Text style={styles.scoreText}>Final Score: {score}</Text>
+                <Text style={styles.scoreText}>Total Balance: {totalBalance}</Text>
                 <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')} style={styles.restartButton}>
                     <Text>Go Back to New Game</Text>
                 </TouchableOpacity>
@@ -140,61 +170,62 @@ const QuizGenius = () => {
     
     return (
         <ImageBackground
-        source={require('../assets/background/genius.jpg')}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-    >
+            source={require('../assets/background/genius.jpg')}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
             <View style={styles.overlay}>
-        <View style={styles.container}>
-            <Text style={styles.topicText}>{currentQuestion.topic}</Text>
-            <Text style={styles.questionText}>{currentQuestion.question}</Text>
-            <Text style={styles.scoreText}>Score: {score}</Text>
-            <Text style={styles.timerText}>Time Left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</Text>
-            <View style={styles.optionsContainer}>
-                {currentQuestion.options.map((option, index) => (
+                <View style={styles.container}>
+                    <Text style={styles.topicText}>{currentQuestion.topic}</Text>
+                    <Text style={styles.questionText}>{currentQuestion.question}</Text>
+                    <Text style={styles.scoreText}>Score: {score}</Text>
+                    <Text style={styles.timerText}>Time Left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</Text>
+                    <View style={styles.optionsContainer}>
+                        {currentQuestion.options.map((option, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={getOptionStyle(index)}
+                                onPress={() => handleOptionPress(index)}
+                                disabled={selectedOptionIndex !== null || hintApplied}
+                            >
+                                <Text style={styles.optionText}>{option}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
                     <TouchableOpacity
-                        key={index}
-                        style={getOptionStyle(index)}
-                        onPress={() => handleOptionPress(index)}
-                        disabled={selectedOptionIndex !== null || hintApplied}
+                        onPress={handleHintPress}
+                        style={[styles.hintButton, { opacity: score >= 50 && !hintApplied && selectedOptionIndex === null ? 1 : 0.5 }]}
+                        disabled={score < 50 || hintApplied || selectedOptionIndex !== null}
                     >
-                        <Text style={styles.optionText}>{option}</Text>
+                        <Text style={styles.btnText}>Hint</Text>
                     </TouchableOpacity>
-                ))}
-            </View>
-            <TouchableOpacity
-                onPress={handleHintPress}
-                style={[styles.hintButton, { opacity: score >= 50 && !hintApplied && selectedOptionIndex === null ? 1 : 0.5 }]}
-                disabled={score < 50 || hintApplied || selectedOptionIndex !== null}
-            >
-                <Text style={styles.btnText}>Hint</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-                onPress={handleNextQuestion}
-                style={[styles.nextButton, { opacity: selectedOptionIndex !== null ? 1 : 0.5 }]}
-                disabled={selectedOptionIndex === null}
-            >
-                <Text style={styles.btnText}>Next</Text>
-            </TouchableOpacity>
-            <Modal
-                transparent={true}
-                visible={hintModalVisible}
-                animationType="slide"
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Choose an action:</Text>
-                        <Button title="Reveal Answer (50 points)" onPress={() => handleHintAction('reveal')} />
-                        <Button title="Skip Question (50 points)" onPress={() => handleHintAction('skip')} />
-                        <Button title="Cancel" onPress={() => setHintModalVisible(false)} />
-                    </View>
+                    <TouchableOpacity
+                        onPress={handleNextQuestion}
+                        style={[styles.nextButton, { opacity: selectedOptionIndex !== null ? 1 : 0.5 }]}
+                        disabled={selectedOptionIndex === null}
+                    >
+                        <Text style={styles.btnText}>Next</Text>
+                    </TouchableOpacity>
+                    <Modal
+                        transparent={true}
+                        visible={hintModalVisible}
+                        animationType="slide"
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalText}>Choose an action:</Text>
+                                <Button title="Reveal Answer (50 points)" onPress={() => handleHintAction('reveal')} />
+                                <Button title="Skip Question (50 points)" onPress={() => handleHintAction('skip')} />
+                                <Button title="Cancel" onPress={() => setHintModalVisible(false)} />
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            </Modal>
-        </View>
-                    </View>
-                    </ImageBackground>
+            </View>
+        </ImageBackground>
     );
 };
+
 
 
 const styles = StyleSheet.create({

@@ -1,11 +1,13 @@
 // On finish -> topic cards to buy for album
 // highlight correct in green, even when wrong selected
-// Total balance
+// Total balance - inconsistent update +- 100
 
-import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, Image, FlatList } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
+import brochures from '../constants/brochures.js';
 
 const Quiz = ({ topic, topicIndex }) => {
     const navigation = useNavigation();
@@ -14,11 +16,36 @@ const Quiz = ({ topic, topicIndex }) => {
     const [showResult, setShowResult] = useState(false);
     const [nextEnabled, setNextEnabled] = useState(false);
     const [score, setScore] = useState(0);
+    const [totalBalance, setTotalBalance] = useState(0);
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
     const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
 
-    const { unlockNextTopic, enabledTopics, updateTotalScore } = useQuiz();
+    const { unlockNextTopic, enabledTopics } = useQuiz();
+
+    useEffect(() => {
+        const loadTotalBalance = async () => {
+            try {
+                const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+                if (storedTotalBalance !== null) {
+                    setTotalBalance(parseInt(storedTotalBalance, 10));
+                }
+            } catch (error) {
+                console.error('Failed to load total balance:', error);
+            }
+        };
+
+        loadTotalBalance();
+    }, []);
+
+    const updateTotalBalance = async (newBalance) => {
+        try {
+            await AsyncStorage.setItem('totalBalance', newBalance.toString());
+            setTotalBalance(newBalance);
+        } catch (error) {
+            console.error('Failed to save total balance:', error);
+        }
+    };
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
@@ -32,11 +59,18 @@ const Quiz = ({ topic, topicIndex }) => {
                 if (currentQuestionIndex < topic.questions.length - 1) {
                     setNextEnabled(true);
                 } else {
-                    setShowResult(true);
-                    unlockNextTopic(topicIndex);
+                    finishQuiz();
                 }
             }, 1500);
         }
+    };
+
+    const finishQuiz = async () => {
+        setShowResult(true);
+
+        const updatedBalance = totalBalance + score;
+        await updateTotalBalance(updatedBalance);
+        unlockNextTopic(topicIndex);
     };
 
     const handleNextPress = () => {
@@ -46,8 +80,7 @@ const Quiz = ({ topic, topicIndex }) => {
             setNextEnabled(false);
             setHintApplied(false);
         } else {
-            setShowResult(true);
-            unlockNextTopic(topicIndex);
+            finishQuiz();
         }
     };
 
@@ -92,20 +125,38 @@ const Quiz = ({ topic, topicIndex }) => {
 
     const nextTopicExists = topicIndex + 1 < enabledTopics.length;
 
+    const getBrochuresForTopic = (topicName) => {
+        const topicBrochures = brochures.find(b => b.topic === topicName);
+        return topicBrochures ? topicBrochures.cards : [];
+    };
+
+    const renderBrochureItem = ({ item }) => (
+        <View style={styles.brochureCard}>
+            <Image
+                source={item.image}
+                style={styles.brochureImage}
+            />
+            <Text style={styles.brochureTitle}>{item.name}</Text>
+            <Text style={styles.brochurePrice}>Price: ${item.price}</Text>
+        </View>
+    );
+
     if (showResult) {
-        // updateTotalScore(score);
+        const currentBrochures = getBrochuresForTopic(topic.topic);
 
         return (
             <ImageBackground
-            source={topic.image}
-            style={styles.backgroundImage}
-            resizeMode="cover"
-        >
+                source={topic.image}
+                style={styles.backgroundImage}
+                resizeMode="cover"
+            >
                 <View style={styles.overlay}>
                     <View style={styles.container}>
                         <Text style={styles.topicName}>Quiz Finished</Text>
                         <Text style={styles.topicName}>{topic.topic}</Text>
                         <Text style={styles.scoreText}>Final Score: {score}</Text>
+                        <Text style={styles.scoreText}>Total Balance: {totalBalance}</Text>
+
                         <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
                             <Text style={styles.finishText}>Go back</Text>
                         </TouchableOpacity>
@@ -115,6 +166,15 @@ const Quiz = ({ topic, topicIndex }) => {
                                 <Text style={styles.nextTopicBtnText}>Next</Text>
                             </TouchableOpacity>
                         )}
+
+                        {/* Render brochures in two columns */}
+                        <FlatList
+                            data={currentBrochures}
+                            renderItem={renderBrochureItem}
+                            keyExtractor={(item) => item.name}
+                            numColumns={2}
+                            contentContainerStyle={styles.brochuresContainer}
+                        />
 
                         <Modal
                             transparent={true}
@@ -141,10 +201,10 @@ const Quiz = ({ topic, topicIndex }) => {
 
     return (
         <ImageBackground
-        source={topic.image}
-        style={styles.backgroundImage}
-        resizeMode="cover"
-    >
+            source={topic.image}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
             <View style={styles.overlay}>
                 <View style={styles.container}>
                     <Text style={styles.topicName}>{topic.topic}</Text>
@@ -341,7 +401,32 @@ const styles = StyleSheet.create({
         color: 'blue',
         textAlign: 'center',
         marginTop: 20,
-    }
+    },
+    brochuresContainer: {
+        width: '100%',
+        marginVertical: 20,
+    },
+    brochureCard: {
+        backgroundColor: '#f9f9f9',
+        padding: 15,
+        borderRadius: 10,
+        marginVertical: 10,
+        alignItems: 'center',
+    },
+    brochureImage: {
+        width: 100,
+        height: 100,
+        borderRadius: 10,
+        marginBottom: 10,
+    },
+    brochureTitle: {
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    brochurePrice: {
+        fontSize: 16,
+        color: '#333',
+    },
 });
 
 export default Quiz;
