@@ -1,10 +1,9 @@
-// Background theme image
 // On finish -> topic cards to buy for album
 // highlight correct in green, even when wrong selected
 // Total balance
 
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
 
@@ -94,39 +93,45 @@ const Quiz = ({ topic, topicIndex }) => {
     const nextTopicExists = topicIndex + 1 < enabledTopics.length;
 
     if (showResult) {
-        // Only update the total score with the final score of the current quiz
-        updateTotalScore(score);
+        // updateTotalScore(score);
 
         return (
-            <View style={styles.container}>
-                <Text style={styles.topicName}>Quiz Finished</Text>
-                <Text style={styles.topicName}>{topic.topic}</Text>
-                <Text style={styles.scoreText}>Final Score: {score}</Text>
-                {/* Make sure you have a way to show the total score if needed */}
-                <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
-                    <Text style={styles.finishText}>Go back</Text>
-                </TouchableOpacity>
+            <ImageBackground
+            source={topic.image}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
+                <View style={styles.overlay}>
+                    <View style={styles.container}>
+                        <Text style={styles.topicName}>Quiz Finished</Text>
+                        <Text style={styles.topicName}>{topic.topic}</Text>
+                        <Text style={styles.scoreText}>Final Score: {score}</Text>
+                        <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
+                            <Text style={styles.finishText}>Go back</Text>
+                        </TouchableOpacity>
 
-                {nextTopicExists && (
-                    <TouchableOpacity onPress={() => setNextLevelModalVisible(true)}>
-                        <Text style={styles.nextTopicBtnText}>Next</Text>
-                    </TouchableOpacity>
-                )}
+                        {nextTopicExists && (
+                            <TouchableOpacity onPress={() => setNextLevelModalVisible(true)}>
+                                <Text style={styles.nextTopicBtnText}>Next</Text>
+                            </TouchableOpacity>
+                        )}
 
-                <Modal
-                    transparent={true}
-                    visible={nextLevelModalVisible}
-                    animationType="slide"
-                >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
-                            <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
-                            <Button title="Proceed" onPress={handleProceedToNextTopic} />
-                        </View>
+                        <Modal
+                            transparent={true}
+                            visible={nextLevelModalVisible}
+                            animationType="slide"
+                        >
+                            <View style={styles.modalContainer}>
+                                <View style={styles.modalContent}>
+                                    <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
+                                    <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
+                                    <Button title="Proceed" onPress={handleProceedToNextTopic} />
+                                </View>
+                            </View>
+                        </Modal>
                     </View>
-                </Modal>
-            </View>
+                </View>
+            </ImageBackground>
         );
     }
 
@@ -135,64 +140,72 @@ const Quiz = ({ topic, topicIndex }) => {
     const isCorrect = selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex] === currentQuestion.answer;
 
     return (
-        <View style={styles.container}>
-            <Text style={styles.topicName}>{topic.topic}</Text>
-            <View style={styles.scoreContainer}>
-                <Text style={styles.scoreText}>Score: {score}</Text>
-                <TouchableOpacity
-                    style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
-                    onPress={handleHintPress}
-                    disabled={selectedOptionIndex !== null || hintApplied}
-                >
-                    <Text style={styles.hintButtonText}>Hint</Text>
-                </TouchableOpacity>
-            </View>
-            <View style={styles.questionContainer}>
-                <Text style={styles.questionText}>{currentQuestion.question}</Text>
-                {currentQuestion.options.map((option, index) => (
-                    <TouchableOpacity
-                        key={index}
-                        style={[
-                            styles.optionButton,
-                            selectedOptionIndex !== null && (
-                                index === selectedOptionIndex
-                                    ? isCorrect
-                                        ? styles.correctOption
-                                        : styles.incorrectOption
-                                    : index === correctOptionIndex && hintApplied
-                                        ? styles.correctOption
-                                        : null
-                            ),
-                            selectedOptionIndex === null && hintApplied && index === correctOptionIndex ? styles.hintOption : null
-                        ]}
-                        onPress={() => handleOptionPress(index)}
-                        disabled={selectedOptionIndex !== null || hintApplied}
-                    >
-                        <Text style={styles.optionText}>{option}</Text>
-                    </TouchableOpacity>
-                ))}
-            </View>
-            <TouchableOpacity
-                style={[styles.nextButton, { opacity: nextEnabled ? 1 : 0.5 }]}
-                onPress={handleNextPress}
-                disabled={!nextEnabled}
-            >
-                <Text style={styles.nextButtonText}>Next</Text>
-            </TouchableOpacity>
-            <Modal
-                transparent={true}
-                visible={hintModalVisible}
-                animationType="slide"
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
-                        <Button title="Yes" onPress={() => handleHintPurchase(true)} />
-                        <Button title="No" onPress={() => handleHintPurchase(false)} />
+        <ImageBackground
+        source={topic.image}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+    >
+            <View style={styles.overlay}>
+                <View style={styles.container}>
+                    <Text style={styles.topicName}>{topic.topic}</Text>
+                    <View style={styles.scoreContainer}>
+                        <Text style={styles.scoreText}>Score: {score}</Text>
+                        <TouchableOpacity
+                            style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
+                            onPress={handleHintPress}
+                            disabled={selectedOptionIndex !== null || hintApplied}
+                        >
+                            <Text style={styles.hintButtonText}>Hint</Text>
+                        </TouchableOpacity>
                     </View>
+                    <View style={styles.questionContainer}>
+                        <Text style={styles.questionText}>{currentQuestion.question}</Text>
+                        {currentQuestion.options.map((option, index) => (
+                            <TouchableOpacity
+                                key={index}
+                                style={[
+                                    styles.optionButton,
+                                    selectedOptionIndex !== null && (
+                                        index === selectedOptionIndex
+                                            ? isCorrect
+                                                ? styles.correctOption
+                                                : styles.incorrectOption
+                                            : index === correctOptionIndex && hintApplied
+                                                ? styles.correctOption
+                                                : null
+                                    ),
+                                    selectedOptionIndex === null && hintApplied && index === correctOptionIndex ? styles.hintOption : null
+                                ]}
+                                onPress={() => handleOptionPress(index)}
+                                disabled={selectedOptionIndex !== null || hintApplied}
+                            >
+                                <Text style={styles.optionText}>{option}</Text>
+                            </TouchableOpacity>
+                        ))}
+                    </View>
+                    <TouchableOpacity
+                        style={[styles.nextButton, { opacity: nextEnabled ? 1 : 0.5 }]}
+                        onPress={handleNextPress}
+                        disabled={!nextEnabled}
+                    >
+                        <Text style={styles.nextButtonText}>Next</Text>
+                    </TouchableOpacity>
+                    <Modal
+                        transparent={true}
+                        visible={hintModalVisible}
+                        animationType="slide"
+                    >
+                        <View style={styles.modalContainer}>
+                            <View style={styles.modalContent}>
+                                <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
+                                <Button title="Yes" onPress={() => handleHintPurchase(true)} />
+                                <Button title="No" onPress={() => handleHintPurchase(false)} />
+                            </View>
+                        </View>
+                    </Modal>
                 </View>
-            </Modal>
-        </View>
+            </View>
+        </ImageBackground>
     );
 };
 
@@ -206,15 +219,29 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    backgroundImage: {
+        width: '100%',
+        height: '110%',
+        justifyContent: 'center',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+    },
     topicName: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 40,
         marginTop: 30,
+        color: 'white'
     },
     scoreText: {
         fontSize: 18,
         fontWeight: 'bold',
+        color: 'white'
     },
     questionContainer: {
         marginBottom: 20,
@@ -224,7 +251,8 @@ const styles = StyleSheet.create({
         fontSize: 20,
         marginBottom: 200,
         textAlign: 'center',
-        height: 50
+        height: 50,
+        color: 'white'
     },
     optionButton: {
         padding: 15,
@@ -237,6 +265,7 @@ const styles = StyleSheet.create({
     },
     optionText: {
         fontSize: 18,
+        color: 'white'
     },
     correctOption: {
         backgroundColor: 'lightgreen',

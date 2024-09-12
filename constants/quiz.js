@@ -1,6 +1,7 @@
 const quiz = [
     {
         topic: "Valleys of Saint Vincent",
+        image: require('../assets/background/saint-vincent.jpg'),
         questions: [
             {
                 question: "In which valley can you enjoy views of Monte Rosa?",
@@ -106,6 +107,7 @@ const quiz = [
     },
     {
         topic: "History and Culture",
+        image: require('../assets/background/history-culture.jpg'),
         questions: [
             {
                 question: "In which century was the Church of Saint Vincent built?",
@@ -211,6 +213,7 @@ const quiz = [
     },
     {
         topic: "Attractions",
+        image: require('../assets/background/attractions.jpg'),
         questions: [
             {
                 question: "What type of plants can be found in the Saint-Vincent Botanical Garden?",
@@ -316,6 +319,7 @@ const quiz = [
     },
     {
         topic: "Nature and Landscapes",
+        image: require('../assets/background/nature1.jpg'),
         questions: [
             {
                 question: "Which mountain is often featured in photographs of the Alps?",
@@ -421,6 +425,7 @@ const quiz = [
     },
     {
         topic: "Gastronomy and Restaurants",
+        image: require('../assets/background/gastronomy.jpeg.jpg'),
         questions: [
             {
                 question: "Which restaurant is known for traditional regional cuisine?",
@@ -526,6 +531,7 @@ const quiz = [
     },
     {
         topic: "Hotels",
+        image: require('../assets/background/hotels.jpg.jpg'),
         questions: [
             {
                 question: "Which hotel in Saint-Vincent is known for its stunning views of the valleys and top-notch service?",

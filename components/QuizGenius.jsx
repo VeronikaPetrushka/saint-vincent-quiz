@@ -1,76 +1,78 @@
 // Share results button on finish
-// Total balance
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import quiz from '../constants/quiz.js';
 import shuffleArray from '../utils/shuffle.js';
-import { useQuiz } from '../context/context.js';
 
 const QuizGenius = () => {
-    const [questions, setQuestions] = useState([]);
+    const navigation = useNavigation();
+
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
     const [selectedOptionIndex, setSelectedOptionIndex] = useState(null);
-    const [showResult, setShowResult] = useState(false);
     const [score, setScore] = useState(0);
-    const [timer, setTimer] = useState(120);
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
-    const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
-
-    const navigation = useNavigation();
-    const { updateCommonScore } = useQuiz();
+    const [timeLeft, setTimeLeft] = useState(120);
+    const [correctAnswersInRow, setCorrectAnswersInRow] = useState(0);
+    const [quizFinished, setQuizFinished] = useState(false);
+    const [shuffledQuestions, setShuffledQuestions] = useState(shuffleArray(quiz.flatMap(topic => {
+        return topic.questions.map(question => ({ ...question, topic: topic.topic }));
+    })));
 
     useEffect(() => {
-        setQuestions(shuffleArray(quiz));
-        const timerId = setInterval(() => {
-            setTimer(prevTime => {
-                if (prevTime <= 1) {
-                    clearInterval(timerId);
-                    handleFinishQuiz();
+        if (quizFinished) return;
+
+        const timer = setInterval(() => {
+            setTimeLeft(prevTime => {
+                if (prevTime <= 0) {
+                    clearInterval(timer);
+                    finishQuiz();
                     return 0;
                 }
                 return prevTime - 1;
             });
         }, 1000);
 
-        return () => clearInterval(timerId);
-    }, []);
-
-    useEffect(() => {
-        if (currentQuestionIndex > 0 && currentQuestionIndex % 2 === 0) {
-            setTimer(prevTime => prevTime + 20);
-        }
-    }, [currentQuestionIndex]);
+        return () => clearInterval(timer);
+    }, [quizFinished]);
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
             setSelectedOptionIndex(index);
-            const isCorrect = questions[currentQuestionIndex].options[index] === questions[currentQuestionIndex].answer;
-
+            const isCorrect = index === currentQuestion?.options.indexOf(currentQuestion?.answer);
             setScore(prevScore => Math.max(0, prevScore + (isCorrect ? 100 : -100)));
-            setTimeout(() => {
-                if (currentQuestionIndex < questions.length - 1) {
-                    setCurrentQuestionIndex(currentQuestionIndex + 1);
-                    setSelectedOptionIndex(null);
-                } else {
-                    handleFinishQuiz();
-                }
-            }, 1500);
+            
+            if (isCorrect) {
+                setCorrectAnswersInRow(prev => {
+                    const newCount = prev + 1;
+                    if (newCount % 2 === 0) {
+                        setTimeLeft(prevTime => Math.min(prevTime + 20, 120));
+                    }
+                    return newCount;
+                });
+            } else {
+                setCorrectAnswersInRow(0);
+            }
+            
+            setHintApplied(true);
         }
     };
 
-    const handleFinishQuiz = () => {
-        updateCommonScore(score);
-        setShowResult(true);
+    const handleNextQuestion = () => {
+        if (currentQuestionIndex < shuffledQuestions.length - 1) {
+            setCurrentQuestionIndex(prev => prev + 1);
+            setSelectedOptionIndex(null);
+            setHintApplied(false);
+        } else {
+            finishQuiz();
+        }
     };
 
     const handleHintPress = () => {
-        if (score >= 50 && !hintApplied && selectedOptionIndex === null) {
+        if (score >= 50 && !hintApplied) {
             setHintModalVisible(true);
-        } else if (selectedOptionIndex !== null) {
-            Alert.alert('Hint cannot be used after selecting an option.');
         } else if (hintApplied) {
             Alert.alert('Hint already used for this question.');
         } else {
@@ -78,77 +80,102 @@ const QuizGenius = () => {
         }
     };
 
-    const handleHintPurchase = (purchase) => {
-        if (purchase) {
+    const handleHintAction = (action) => {
+        if (action === 'reveal') {
             setScore(prevScore => Math.max(0, prevScore - 50));
             setHintApplied(true);
+            setSelectedOptionIndex(currentQuestion?.options.indexOf(currentQuestion?.answer));
+        } else if (action === 'skip') {
+            setScore(prevScore => Math.max(0, prevScore - 50));
+            setHintApplied(true);
+            handleNextQuestion();
         }
         setHintModalVisible(false);
     };
 
-    if (showResult) {
+    const finishQuiz = () => {
+        setQuizFinished(true);
+    };
+
+    const restartQuiz = () => {
+        setCurrentQuestionIndex(0);
+        setSelectedOptionIndex(null);
+        setScore(0);
+        setHintApplied(false);
+        setTimeLeft(120);
+        setCorrectAnswersInRow(0);
+        setQuizFinished(false);
+        setShuffledQuestions(shuffleArray(quiz.flatMap(topic => {
+            return topic.questions.map(question => ({ ...question, topic: topic.topic }));
+        })));
+    };
+
+    const getOptionStyle = (index) => {
+        let backgroundColor = 'transparent';
+        if (selectedOptionIndex === index) {
+            backgroundColor = index === currentQuestion?.options.indexOf(currentQuestion?.answer) ? 'lightgreen' : 'lightcoral';
+        } else if (index === currentQuestion?.options.indexOf(currentQuestion?.answer) && selectedOptionIndex !== null) {
+            backgroundColor = 'lightgreen';
+        }
+        return [styles.optionButton, { backgroundColor }];
+    };
+
+    if (quizFinished) {
         return (
             <View style={styles.container}>
+                <Text style={styles.topicText}>Quiz Finished</Text>
+                <Text style={styles.topicText}>You were magnificent, but unfortunately, time has run out!</Text>
                 <Text style={styles.scoreText}>Final Score: {score}</Text>
-                <Text style={styles.scoreText}>Common Score: {commonScore}</Text>
-                <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
-                    <Text style={styles.finishText}>Go back</Text>
+                <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')} style={styles.restartButton}>
+                    <Text>Go Back to New Game</Text>
                 </TouchableOpacity>
-                <Modal
-                    transparent={true}
-                    visible={nextLevelModalVisible}
-                    animationType="slide"
-                >
-                    <View style={styles.modalContainer}>
-                        <View style={styles.modalContent}>
-                            <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
-                            <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
-                            <Button title="Proceed" onPress={() => navigation.navigate('QuizGeniusScreen')} />
-                        </View>
-                    </View>
-                </Modal>
+                <TouchableOpacity onPress={restartQuiz} style={styles.restartButton}>
+                    <Text>Try Again</Text>
+                </TouchableOpacity>
             </View>
         );
     }
 
-    const currentQuestion = questions[currentQuestionIndex];
-    const correctOptionIndex = currentQuestion.options.indexOf(currentQuestion.answer);
-    const isCorrect = selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex] === currentQuestion.answer;
-
+    const currentQuestion = shuffledQuestions[currentQuestionIndex];
+    
     return (
+        <ImageBackground
+        source={require('../assets/background/genius.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+    >
+            <View style={styles.overlay}>
         <View style={styles.container}>
-            <Text style={styles.timerText}>Time Left: {timer}s</Text>
+            <Text style={styles.topicText}>{currentQuestion.topic}</Text>
             <Text style={styles.questionText}>{currentQuestion.question}</Text>
-            {currentQuestion.options.map((option, index) => (
-                <TouchableOpacity
-                    key={index}
-                    style={[
-                        styles.optionButton,
-                        selectedOptionIndex !== null && (
-                            index === selectedOptionIndex
-                                ? isCorrect
-                                    ? styles.correctOption
-                                    : styles.incorrectOption
-                                : index === correctOptionIndex && hintApplied
-                                    ? styles.correctOption
-                                    : null
-                        ),
-                        selectedOptionIndex === null && hintApplied && index === correctOptionIndex ? styles.hintOption : null
-                    ]}
-                    onPress={() => handleOptionPress(index)}
-                    disabled={selectedOptionIndex !== null || hintApplied}
-                >
-                    <Text style={styles.optionText}>{option}</Text>
-                </TouchableOpacity>
-            ))}
+            <Text style={styles.scoreText}>Score: {score}</Text>
+            <Text style={styles.timerText}>Time Left: {Math.floor(timeLeft / 60)}:{(timeLeft % 60).toString().padStart(2, '0')}</Text>
+            <View style={styles.optionsContainer}>
+                {currentQuestion.options.map((option, index) => (
+                    <TouchableOpacity
+                        key={index}
+                        style={getOptionStyle(index)}
+                        onPress={() => handleOptionPress(index)}
+                        disabled={selectedOptionIndex !== null || hintApplied}
+                    >
+                        <Text style={styles.optionText}>{option}</Text>
+                    </TouchableOpacity>
+                ))}
+            </View>
             <TouchableOpacity
-                style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
                 onPress={handleHintPress}
-                disabled={selectedOptionIndex !== null || hintApplied}
+                style={[styles.hintButton, { opacity: score >= 50 && !hintApplied && selectedOptionIndex === null ? 1 : 0.5 }]}
+                disabled={score < 50 || hintApplied || selectedOptionIndex !== null}
             >
-                <Text style={styles.hintButtonText}>Hint</Text>
+                <Text style={styles.btnText}>Hint</Text>
             </TouchableOpacity>
-
+            <TouchableOpacity
+                onPress={handleNextQuestion}
+                style={[styles.nextButton, { opacity: selectedOptionIndex !== null ? 1 : 0.5 }]}
+                disabled={selectedOptionIndex === null}
+            >
+                <Text style={styles.btnText}>Next</Text>
+            </TouchableOpacity>
             <Modal
                 transparent={true}
                 visible={hintModalVisible}
@@ -156,13 +183,16 @@ const QuizGenius = () => {
             >
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
-                        <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
-                        <Button title="Yes" onPress={() => handleHintPurchase(true)} />
-                        <Button title="No" onPress={() => handleHintPurchase(false)} />
+                        <Text style={styles.modalText}>Choose an action:</Text>
+                        <Button title="Reveal Answer (50 points)" onPress={() => handleHintAction('reveal')} />
+                        <Button title="Skip Question (50 points)" onPress={() => handleHintAction('skip')} />
+                        <Button title="Cancel" onPress={() => setHintModalVisible(false)} />
                     </View>
                 </View>
             </Modal>
         </View>
+                    </View>
+                    </ImageBackground>
     );
 };
 
@@ -174,19 +204,39 @@ const styles = StyleSheet.create({
         width: '100%',
         height: '100%',
     },
+    backgroundImage: {
+        width: '100%',
+        height: '110%',
+        justifyContent: 'center',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
+    },
     topicText: {
         fontSize: 24,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: "white"
     },
     questionText: {
         fontSize: 18,
         marginBottom: 20,
+        color: "white"
     },
     scoreText: {
         fontSize: 18,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: "white"
+    },
+    timerText: {
+        color: "white",
+        fontSize: 18,
+        marginBottom: 200
     },
     optionsContainer: {
         marginBottom: 20,
@@ -200,6 +250,10 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         alignItems: 'center',
         justifyContent: 'center',
+    },
+    optionText:{
+        color: "white",
+        fontSize: 18,
     },
     nextButton: {
         padding: 15,
@@ -221,6 +275,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         width: 100,
+    },
+    btnText: {
+        color: "white"
     },
     modalContainer: {
         flex: 1,
