@@ -219,15 +219,16 @@ const Quiz = ({ topic, topicIndex }) => {
 <FlatList
     data={brochuresForTopic}
     keyExtractor={item => item.name}
+    numColumns={2}
+    style={styles.brochureList}
     renderItem={({ item }) => {
         console.log('Rendering brochure:', item.name, 'Purchased status:', item.purchased);
         return (
             <View style={styles.brochureCard}>
                 <ImageBackground source={item.image} style={styles.brochureImage}>
-                    <Text style={styles.brochureTitle}>{item.name}</Text>
-                    <Text style={styles.brochureFact}>{item.fact.factName}</Text>
-                    <Text style={styles.brochureDescription}>{item.fact.description}</Text>
                 </ImageBackground>
+
+                <Text style={styles.brochureTitle}>{item.name}</Text>
 
                 <TouchableOpacity
                     style={[
@@ -240,16 +241,13 @@ const Quiz = ({ topic, topicIndex }) => {
                     disabled={item.purchased || totalBalance < item.price}
                 >
                     <Text style={styles.buyButtonText}>
-                        {item.purchased ? 'Purchased' : `Buy for ${item.price}`}
+                        {item.purchased ? 'Purchased' : `${item.price}`}
                     </Text>
                 </TouchableOpacity>
             </View>
         );
     }}
 />
-
-
-
 
                     <Modal
                         transparent={true}
@@ -477,9 +475,10 @@ const styles = StyleSheet.create({
         textAlign: 'center',
         marginTop: 20,
     },
-    brochuresContainer: {
+    brochureList: {
         width: '100%',
         marginVertical: 20,
+        marginBottom: 130
     },
     brochureCard: {
         backgroundColor: '#f9f9f9',
@@ -487,22 +486,36 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginVertical: 10,
         alignItems: 'center',
+        justifyContent: 'space-between',
         width: 170,
+        height: 260,
         margin: 5
     },
     brochureImage: {
-        width: 100,
-        height: 100,
+        width: 140,
+        height: 150,
         borderRadius: 10,
         marginBottom: 10,
+        overflow: 'hidden'
     },
     brochureTitle: {
-        fontSize: 18,
+        fontSize: 17,
         fontWeight: 'bold',
+        marginBottom: 5
     },
     brochurePrice: {
         fontSize: 16,
         color: '#333',
+    },
+    buyButton: {
+        padding: 5,
+        borderRadius: 10,
+        width: "100%",
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    buyButtonText: {
+        color: "white"
     },
     finishBtn: {
         width: '100%',
