@@ -1,24 +1,26 @@
-// Background image
+import React from 'react';
+import { SafeAreaView, View } from "react-native";
+import Album from '../components/Album';
+import MenuPanel from '../components/MenuPanel';
 
-import { SafeAreaView, View } from "react-native"
-import MainMenu from "../components/MainMenu"
-import MenuPanel from "../components/MenuPanel"
+const AlbumScreen = () => {
 
-const MainMenuScreen = () => {
+
     return (
         <SafeAreaView style={styles.container}>
-            <MainMenu />
+            <Album />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
         </SafeAreaView>
-    )
-}; 
+    );
+};
 
 const styles = {
     container: {
         width: "100%",
         height: "100%",
+        justifyContent: "space-between"
     },
 
     menu: {
@@ -28,4 +30,4 @@ const styles = {
     }
 }
 
-export default MainMenuScreen;
+export default AlbumScreen;

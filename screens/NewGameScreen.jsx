@@ -23,7 +23,7 @@ const styles = {
     menu: {
         position: 'fixed',
         width: "100%",
-        top: -80
+        top: -160
     }
 }
 

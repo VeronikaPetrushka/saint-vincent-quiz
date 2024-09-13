@@ -212,8 +212,9 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         padding: 10,
         marginTop: 20,
-        height: "100%",
-        width: "100%"
+        height: "105%",
+        width: "100%",
+        backgroundColor: '#c7d3b8'
     },
     row: {
         flexDirection: 'row',

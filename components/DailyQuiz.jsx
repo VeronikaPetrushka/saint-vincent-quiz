@@ -1,10 +1,11 @@
 // Set timer for 24h
 
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import dailyQuiz from '../constants/dailyQuiz.js';
+import Icons from './Icons';
 
 const DailyQuiz = () => {
     const navigation = useNavigation();
@@ -16,6 +17,7 @@ const DailyQuiz = () => {
     const [countdown, setCountdown] = useState(0);
     const [totalBalance, setTotalBalance] = useState(0);
     const intervalRef = useRef(null);
+    const balance = 'balance';
 
     // Time allowed between quizzes (2 minutes = 120000ms)
     const QUIZ_INTERVAL = 120000; // 2 minutes in milliseconds
@@ -67,7 +69,7 @@ const DailyQuiz = () => {
     const updateTotalBalance = async (newBalance) => {
         try {
             await AsyncStorage.setItem('totalBalance', newBalance.toString());
-            setTotalBalance(newBalance); // Ensure state is updated after saving
+            setTotalBalance(newBalance);
         } catch (error) {
             console.error('Failed to save total balance:', error);
         }
@@ -107,6 +109,12 @@ const DailyQuiz = () => {
 
     if (nextQuizAvailable) {
         return (
+            <ImageBackground
+            source={require('../assets/background/genius.jpg')}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
+            <View style={styles.overlay}>        
             <View style={styles.container}>
                 <Text style={styles.scoreText}>
                     Next daily quiz will be available in {formatTime(countdown)}.
@@ -115,19 +123,32 @@ const DailyQuiz = () => {
                     <Text style={styles.goBackText}>Go Back</Text>
                 </TouchableOpacity>
             </View>
+            </View>
+        </ImageBackground>
+
         );
     }
 
     if (quizFinished) {
         return (
+            <ImageBackground
+            source={require('../assets/background/genius.jpg')}
+            style={styles.backgroundImage}
+            resizeMode="cover"
+        >
+            <View style={styles.overlay}>
+        
             <View style={styles.container}>
-                <Text style={styles.scoreText}>You have completed all your daily tasks for today. See you tomorrow!</Text>
-                <Text style={styles.scoreText}>Final Score: {score}</Text>
-                <Text style={styles.scoreText}>Total Balance: {totalBalance}</Text>
+                <Text style={styles.scoreTextFinal}>You have completed all your daily tasks for today. See you tomorrow!</Text>
+                <Text style={styles.scoreTextFinal}>Final Score: {score}</Text>
+                <Text style={styles.scoreTextFinal}>Total Balance: {totalBalance}</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
                     <Text style={styles.goBackText}>Go Back</Text>
                 </TouchableOpacity>
             </View>
+            </View>
+        </ImageBackground>
+
         );
     }
 
@@ -135,9 +156,16 @@ const DailyQuiz = () => {
     const correctAnswer = currentQuestion.answer;
 
     return (
+        <ImageBackground
+        source={require('../assets/background/genius.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+    >
+        <View style={styles.overlay}>
+
         <View style={styles.container}>
             <Text style={styles.questionText}>{currentQuestion.statement}</Text>
-            <Text style={styles.scoreText}>Score: {score}</Text>
+            <Text style={styles.scoreText}><Icons type={balance}/>  {score}</Text>
             <TouchableOpacity
                 style={[
                     styles.optionButton,
@@ -159,6 +187,9 @@ const DailyQuiz = () => {
                 <Text style={styles.optionText}>False</Text>
             </TouchableOpacity>
         </View>
+            </View>
+            </ImageBackground>
+    
     );
 };
 
@@ -169,27 +200,46 @@ const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
         alignItems: 'center',
-        padding: 20
+        padding: 20,
+        width: '100%',
+        height: '100%',
+    },
+    backgroundImage: {
+        width: '100%',
+        height: '110%',
+        justifyContent: 'center',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
     questionText: {
-        fontSize: 18,
+        fontSize: 22,
         marginBottom: 20,
+        color: 'white',
+        marginBottom: 100,
+        marginTop: -200
     },
     scoreText: {
-        fontSize: 18,
-        marginBottom: 10
+        fontSize: 22,
+        marginBottom: 300,
+        color: 'white'
     },
     optionButton: {
         padding: 15,
-        borderRadius: 5,
+        borderRadius: 10,
         borderWidth: 1,
         borderColor: '#ccc',
-        width: '40%',
+        width: '100%',
         alignItems: 'center',
         marginBottom: 10,
     },
     optionText: {
-        fontSize: 16
+        fontSize: 20,
+        color: 'white'
     },
     correctOption: {
         backgroundColor: 'green',
@@ -207,7 +257,11 @@ const styles = StyleSheet.create({
     },
     goBackText: {
         color: '#FFF',
-        fontSize: 16
+        fontSize: 16,
+        color: 'white'
+    },
+    scoreTextFinal: {
+        marginBottom: 50
     }
 });
 

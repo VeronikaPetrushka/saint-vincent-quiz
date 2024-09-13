@@ -25,7 +25,7 @@ const styles = {
     menu: {
         position: 'fixed',
         width: "100%",
-        top: -100
+        top: -140
     }
 }
 

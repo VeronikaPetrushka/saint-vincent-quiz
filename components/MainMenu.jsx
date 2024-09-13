@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, TouchableOpacity, Text, View, StyleSheet } from 'react-native';
+import { SafeAreaView, TouchableOpacity, Text, View, StyleSheet, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AboutModal from '../components/AboutModal';
 
@@ -11,6 +11,13 @@ const MainMenu = () => {
   const closeModal = () => setModalVisible(false);
 
   return (
+    <ImageBackground
+    source={require('../assets/background/genius.jpg')}
+    style={styles.backgroundImage}
+    resizeMode="cover"
+>
+    <View style={styles.overlay}>
+
     <SafeAreaView style={styles.container}>
       <Text style={styles.name}>{`Saint-Vincent \n Valley Adventures`}</Text>
       <View style={styles.btnsContainer}>
@@ -27,6 +34,9 @@ const MainMenu = () => {
 
       <AboutModal visible={modalVisible} onClose={closeModal} />
     </SafeAreaView>
+    </View>
+        </ImageBackground>
+
   );
 };
 
@@ -39,11 +49,24 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     paddingVertical: 30,
   },
+  backgroundImage: {
+    width: '100%',
+    height: '110%',
+    justifyContent: 'center',
+},
+overlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.6)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    width: '100%',
+},
   name: {
     fontSize: 28,
     fontWeight: 'bold',
     marginTop: '-50%',
     textAlign: 'center',
+    color: 'white'
   },
   btnsContainer: {
     width: '100%',
@@ -60,7 +83,8 @@ const styles = StyleSheet.create({
     borderRadius: 20,
   },
   btnText: {
-    fontSize: 18,
+    fontSize: 20,
+    color: 'white'
   },
 });
 

@@ -3,11 +3,12 @@
 // Total balance - inconsistent update +- 100
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, Image, FlatList } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, Image, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
 import brochures from '../constants/brochures.js';
+import Icons from './Icons.jsx';
 
 const Quiz = ({ topic, topicIndex }) => {
     const navigation = useNavigation();
@@ -20,6 +21,8 @@ const Quiz = ({ topic, topicIndex }) => {
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
     const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
+    const [brochureData, setBrochureData] = useState([]);
+    const balance = 'balance'
 
     const { unlockNextTopic, enabledTopics } = useQuiz();
 
@@ -37,6 +40,26 @@ const Quiz = ({ topic, topicIndex }) => {
 
         loadTotalBalance();
     }, []);
+
+    useEffect(() => {
+        const loadBrochureData = async () => {
+            try {
+                const storedBrochureData = await AsyncStorage.getItem('brochureData');
+                console.log('Stored brochure data:', storedBrochureData);
+                if (storedBrochureData !== null) {
+                    setBrochureData(JSON.parse(storedBrochureData));
+                } else {
+                    const currentBrochures = getBrochuresForTopic(topic.topic);
+                    console.log('Current brochures data:', currentBrochures);
+                    setBrochureData(currentBrochures);
+                }
+            } catch (error) {
+                console.error('Failed to load brochure data:', error);
+            }
+        };
+
+        loadBrochureData();
+    }, [topic]);
 
     const updateTotalBalance = async (newBalance) => {
         try {
@@ -127,7 +150,26 @@ const Quiz = ({ topic, topicIndex }) => {
 
     const getBrochuresForTopic = (topicName) => {
         const topicBrochures = brochures.find(b => b.topic === topicName);
-        return topicBrochures ? topicBrochures.cards : [];
+        return topicBrochures ? topicBrochures.cards.map(card => ({ ...card, purchased: false })) : [];
+    };
+
+    const handleBrochurePurchase = async (item) => {
+        if (totalBalance >= item.price) {
+            const newBalance = totalBalance - item.price;
+            await updateTotalBalance(newBalance);
+
+            const updatedBrochures = brochureData.map(b => b.name === item.name ? { ...b, purchased: true } : b);
+            setBrochureData(updatedBrochures);
+
+            try {
+                await AsyncStorage.setItem('brochureData', JSON.stringify(updatedBrochures));
+                console.log('Updated brochure data saved:', JSON.stringify(updatedBrochures));
+            } catch (error) {
+                console.error('Failed to save brochure data:', error);
+            }
+        } else {
+            Alert.alert('Insufficient balance', 'You do not have enough points to purchase this brochure.');
+        }
     };
 
     const renderBrochureItem = ({ item }) => (
@@ -138,12 +180,17 @@ const Quiz = ({ topic, topicIndex }) => {
             />
             <Text style={styles.brochureTitle}>{item.name}</Text>
             <Text style={styles.brochurePrice}>Price: ${item.price}</Text>
+            <TouchableOpacity
+                style={[styles.purchaseButton, { opacity: item.purchased || totalBalance < item.price ? 0.5 : 1 }]}
+                onPress={() => !item.purchased && handleBrochurePurchase(item)}
+                disabled={item.purchased || totalBalance < item.price}
+            >
+                <Text style={styles.purchaseButtonText}>{item.purchased ? 'Purchased' : 'Buy'}</Text>
+            </TouchableOpacity>
         </View>
     );
 
     if (showResult) {
-        const currentBrochures = getBrochuresForTopic(topic.topic);
-
         return (
             <ImageBackground
                 source={topic.image}
@@ -155,21 +202,20 @@ const Quiz = ({ topic, topicIndex }) => {
                         <Text style={styles.topicName}>Quiz Finished</Text>
                         <Text style={styles.topicName}>{topic.topic}</Text>
                         <Text style={styles.scoreText}>Final Score: {score}</Text>
-                        <Text style={styles.scoreText}>Total Balance: {totalBalance}</Text>
+                        <Text style={styles.scoreText}> <Icons type={balance}/> {totalBalance}</Text>
 
-                        <TouchableOpacity onPress={() => navigation.navigate('NewGameScreen')}>
+                        <TouchableOpacity style={styles.finishBtn} onPress={() => navigation.navigate('NewGameScreen')}>
                             <Text style={styles.finishText}>Go back</Text>
                         </TouchableOpacity>
 
                         {nextTopicExists && (
-                            <TouchableOpacity onPress={() => setNextLevelModalVisible(true)}>
-                                <Text style={styles.nextTopicBtnText}>Next</Text>
+                            <TouchableOpacity style={styles.finishBtn} onPress={() => setNextLevelModalVisible(true)}>
+                                <Text style={styles.finishText}>Next</Text>
                             </TouchableOpacity>
                         )}
 
-                        {/* Render brochures in two columns */}
                         <FlatList
-                            data={currentBrochures}
+                            data={brochureData}
                             renderItem={renderBrochureItem}
                             keyExtractor={(item) => item.name}
                             numColumns={2}
@@ -301,7 +347,8 @@ const styles = StyleSheet.create({
     scoreText: {
         fontSize: 18,
         fontWeight: 'bold',
-        color: 'white'
+        color: 'white',
+        marginBottom: 20,
     },
     questionContainer: {
         marginBottom: 20,
@@ -412,6 +459,8 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         marginVertical: 10,
         alignItems: 'center',
+        width: 170,
+        margin: 5
     },
     brochureImage: {
         width: 100,
@@ -427,6 +476,22 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
     },
+    finishBtn: {
+        width: '100%',
+        borderColor: 'white',
+        borderWidth: 1,
+        borderRadius: 10,
+        backgroundColor: "#007bff",
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        marginTop: 5,
+        padding: 10
+    },
+    finishText: {
+        color: 'white',
+        fontSize: 18
+    }
 });
 
 export default Quiz;

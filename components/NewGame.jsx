@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, Image } from "react-native";
+import { SafeAreaView, View, Text, TouchableOpacity, Image, ImageBackground } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
 import quiz from '../constants/quiz.js';
@@ -25,6 +25,12 @@ const NewGame = () => {
     const allTopicsEnabled = enabledTopics.length === 6 && enabledTopics.every(enabled => enabled);
 
     return (
+        <ImageBackground
+        source={require('../assets/background/genius.jpg')}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+    >
+        <View style={styles.overlay}>
         <SafeAreaView style={styles.container}>
             <View style={styles.topicBtnContainer}>
                 {quiz.map((item, index) => (
@@ -53,12 +59,14 @@ const NewGame = () => {
                 <TouchableOpacity 
                     style={[styles.modeBtn, { opacity: allTopicsEnabled ? 1 : 0.5 }]} 
                     onPress={handleExpertPress}
-                    disabled={!allTopicsEnabled}
+                    // disabled={!allTopicsEnabled}
                     >
                     <Text style={styles.modeBtnText}>Expert</Text>
                 </TouchableOpacity>
             </View>
         </SafeAreaView>
+            </View>
+            </ImageBackground>
     );
 };
 
@@ -70,7 +78,20 @@ const styles = {
         width: '100%',
         height: '100%',
         paddingHorizontal: 25,
-        paddingVertical: 30
+        paddingVertical: 30,
+    },
+
+    backgroundImage: {
+        width: '100%',
+        height: '110%',
+        justifyContent: 'center',
+    },
+    overlay: {
+        flex: 1,
+        backgroundColor: 'rgba(0, 0, 0, 0.6)',
+        justifyContent: 'center',
+        alignItems: 'center',
+        width: '100%',
     },
 
     topicBtnContainer: {
@@ -78,7 +99,7 @@ const styles = {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginBottom: 100
+        marginBottom: 100,
     },
     buttonWrapper: {
         width: 100,
@@ -89,7 +110,8 @@ const styles = {
         padding: 20,
         justifyContent: 'center',
         alignItems: 'center',
-        margin: 10
+        margin: 10,
+        backgroundColor: 'white',
     },
 
     buttonText: {
@@ -102,7 +124,7 @@ const styles = {
     },
 
     modeBtnContainer: {
-        width: '100%'
+        width: '100%',
     },
 
     modeBtn: {
@@ -113,6 +135,7 @@ const styles = {
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,
+        backgroundColor: 'white',
     },
 
     modeBtnText: {
