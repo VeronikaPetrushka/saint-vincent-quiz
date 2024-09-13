@@ -9,58 +9,64 @@ const Album = () => {
     const [selectedFact, setSelectedFact] = useState(null);
     const navigation = useNavigation();
 
-    // Function to load purchased brochures
-    const loadPurchasedBrochures = useCallback(async () => {
-        try {
-            const storedBrochures = await AsyncStorage.getItem('brochureData');
-            console.log('Stored brochures data:', storedBrochures);
+    // // Function to load purchased brochures
+    // const loadPurchasedBrochures = useCallback(async () => {
+    //     try {
+    //         const storedBrochures = await AsyncStorage.getItem('brochureData');
+    //         console.log('Stored brochures data:', storedBrochures);
+    
+    //         if (storedBrochures) {
+    //             const brochures = JSON.parse(storedBrochures);
+    
+    //             // Convert object to array using Object.values()
+    //             const brochuresArray = Object.values(brochures);
+    
+    //             // Filter for purchased brochures
+    //             const filteredBrochures = brochuresArray.filter(brochure => brochure.purchased);
+    
+    //             setPurchasedBrochures(filteredBrochures);
+    //         } else {
+    //             console.log('No purchased brochures found.');
+    //             setPurchasedBrochures([]); // Initialize with an empty array if nothing is stored
+    //         }
+    //     } catch (error) {
+    //         console.error('Failed to load purchased brochures:', error);
+    //     }
+    // }, []);
+    
 
-            if (storedBrochures !== null) {
-                const brochures = JSON.parse(storedBrochures);
-                console.log('Parsed brochures data:', brochures);
-                const filteredBrochures = brochures.filter(brochure => brochure.purchased);
-                setPurchasedBrochures(filteredBrochures);
-            } else {
-                console.log('No purchased brochures found.');
-                setPurchasedBrochures([]);
-            }
-        } catch (error) {
-            console.error('Failed to load purchased brochures:', error);
-        }
-    }, []);
+    // // Load purchased brochures when the screen is focused
+    // useFocusEffect(
+    //     useCallback(() => {
+    //         loadPurchasedBrochures();
+    //     }, [loadPurchasedBrochures])
+    // );
 
-    // Load purchased brochures when the screen is focused
-    useFocusEffect(
-        useCallback(() => {
-            loadPurchasedBrochures();
-        }, [loadPurchasedBrochures])
-    );
+    // const handleNavigateToStore = () => {
+    //     navigation.navigate('StoreScreen');
+    // };
 
-    const handleNavigateToStore = () => {
-        navigation.navigate('StoreScreen');
-    };
+    // const handleBrochurePress = (fact) => {
+    //     setSelectedFact(fact);
+    //     setModalVisible(true);
+    // };
 
-    const handleBrochurePress = (fact) => {
-        setSelectedFact(fact);
-        setModalVisible(true);
-    };
-
-    const renderBrochureItem = ({ item }) => (
-        <TouchableOpacity onPress={() => handleBrochurePress(item.fact)}>
-            <View style={styles.brochureCard}>
-                <Image
-                    source={item.image}
-                    style={styles.brochureImage}
-                />
-                <Text style={styles.brochureTitle}>{item.name}</Text>
-            </View>
-        </TouchableOpacity>
-    );
+    // const renderBrochureItem = ({ item }) => (
+    //     <TouchableOpacity onPress={() => handleBrochurePress(item.fact)}>
+    //         <View style={styles.brochureCard}>
+    //             <Image
+    //                 source={item.image}
+    //                 style={styles.brochureImage}
+    //             />
+    //             <Text style={styles.brochureTitle}>{item.name}</Text>
+    //         </View>
+    //     </TouchableOpacity>
+    // );
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Album</Text>
-            {purchasedBrochures.length === 0 ? (
+            {/* {purchasedBrochures.length === 0 ? (
                 <View styles={{ width: '100%' }}>
                     <Text style={styles.emptyText}>No purchased brochures yet.</Text>
                     <TouchableOpacity
@@ -104,7 +110,7 @@ const Album = () => {
                         </TouchableOpacity>
                     </View>
                 </View>
-            </Modal>
+            </Modal> */}
         </View>
     );
 };

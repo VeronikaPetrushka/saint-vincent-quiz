@@ -1,14 +1,14 @@
-// On finish -> topic cards to buy for album
+// Topic card purchase status and button update
 // highlight correct in green, even when wrong selected
 // Total balance - inconsistent update +- 100
 
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, Image, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
-import brochures from '../constants/brochures.js';
 import Icons from './Icons.jsx';
+import brochures from '../constants/brochures.js';
 
 const Quiz = ({ topic, topicIndex }) => {
     const navigation = useNavigation();
@@ -21,45 +21,28 @@ const Quiz = ({ topic, topicIndex }) => {
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
     const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
-    const [brochureData, setBrochureData] = useState([]);
-    const balance = 'balance'
+    const [purchasedBrochures, setPurchasedBrochures] = useState([]);
+    const [brochuresForTopic, setBrochuresForTopic] = useState([]);
+    const balance = 'balance';
 
     const { unlockNextTopic, enabledTopics } = useQuiz();
 
     useEffect(() => {
-        const loadTotalBalance = async () => {
-            try {
-                const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
-                if (storedTotalBalance !== null) {
-                    setTotalBalance(parseInt(storedTotalBalance, 10));
-                }
-            } catch (error) {
-                console.error('Failed to load total balance:', error);
-            }
-        };
-
         loadTotalBalance();
-    }, []);
-
-    useEffect(() => {
-        const loadBrochureData = async () => {
-            try {
-                const storedBrochureData = await AsyncStorage.getItem('brochureData');
-                console.log('Stored brochure data:', storedBrochureData);
-                if (storedBrochureData !== null) {
-                    setBrochureData(JSON.parse(storedBrochureData));
-                } else {
-                    const currentBrochures = getBrochuresForTopic(topic.topic);
-                    console.log('Current brochures data:', currentBrochures);
-                    setBrochureData(currentBrochures);
-                }
-            } catch (error) {
-                console.error('Failed to load brochure data:', error);
-            }
-        };
-
-        loadBrochureData();
+        loadBrochures();
+        getBrochuresForCurrentTopic();
     }, [topic]);
+    
+    const loadTotalBalance = async () => {
+        try {
+            const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+            if (storedTotalBalance !== null) {
+                setTotalBalance(parseInt(storedTotalBalance, 10));
+            }
+        } catch (error) {
+            console.error('Failed to load total balance:', error);
+        }
+    };
 
     const updateTotalBalance = async (newBalance) => {
         try {
@@ -69,6 +52,67 @@ const Quiz = ({ topic, topicIndex }) => {
             console.error('Failed to save total balance:', error);
         }
     };
+
+    const loadBrochures = async () => {
+        try {
+            const storedBrochures = await AsyncStorage.getItem('brochures');
+            if (storedBrochures) {
+                setPurchasedBrochures(JSON.parse(storedBrochures));
+            } else {
+                await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
+                setPurchasedBrochures(brochures);
+            }
+        } catch (error) {
+            console.error('Failed to load brochures:', error);
+        }
+    };
+
+    const getBrochuresForCurrentTopic = () => {
+        const topicBrochures = brochures.find(b => b.topic === topic.topic);
+        if (topicBrochures) {
+            setBrochuresForTopic(topicBrochures.cards);
+        }
+    };
+
+    const purchaseBrochure = async (brochure) => {
+        console.log('Attempting to purchase brochure:', brochure.name);
+    
+        if (totalBalance >= brochure.price) {
+            const updatedBrochures = purchasedBrochures.map(b => {
+                if (b.topic === topic.topic) {
+                    return {
+                        ...b,
+                        cards: b.cards.map(card => {
+                            if (card.name === brochure.name) {
+                                console.log('Updating purchased status for brochure:', brochure.name);
+                                return { ...card, purchased: true };
+                            }
+                            return card;
+                        })
+                    };
+                }
+                return b;
+            });
+    
+            const newBalance = totalBalance - brochure.price;
+    
+            setPurchasedBrochures(updatedBrochures);
+            console.log('Updated brochures:', updatedBrochures);
+            console.log('Updated balance:', newBalance);
+            await updateTotalBalance(newBalance);
+    
+            try {
+                await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochures));
+                console.log('Brochures saved to AsyncStorage.');
+            } catch (error) {
+                console.error('Failed to save brochures to AsyncStorage:', error);
+            }
+        } else {
+            Alert.alert('Insufficient balance', 'You do not have enough balance to buy this brochure.');
+        }
+    };    
+    
+
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
@@ -148,48 +192,6 @@ const Quiz = ({ topic, topicIndex }) => {
 
     const nextTopicExists = topicIndex + 1 < enabledTopics.length;
 
-    const getBrochuresForTopic = (topicName) => {
-        const topicBrochures = brochures.find(b => b.topic === topicName);
-        return topicBrochures ? topicBrochures.cards.map(card => ({ ...card, purchased: false })) : [];
-    };
-
-    const handleBrochurePurchase = async (item) => {
-        if (totalBalance >= item.price) {
-            const newBalance = totalBalance - item.price;
-            await updateTotalBalance(newBalance);
-
-            const updatedBrochures = brochureData.map(b => b.name === item.name ? { ...b, purchased: true } : b);
-            setBrochureData(updatedBrochures);
-
-            try {
-                await AsyncStorage.setItem('brochureData', JSON.stringify(updatedBrochures));
-                console.log('Updated brochure data saved:', JSON.stringify(updatedBrochures));
-            } catch (error) {
-                console.error('Failed to save brochure data:', error);
-            }
-        } else {
-            Alert.alert('Insufficient balance', 'You do not have enough points to purchase this brochure.');
-        }
-    };
-
-    const renderBrochureItem = ({ item }) => (
-        <View style={styles.brochureCard}>
-            <Image
-                source={item.image}
-                style={styles.brochureImage}
-            />
-            <Text style={styles.brochureTitle}>{item.name}</Text>
-            <Text style={styles.brochurePrice}>Price: ${item.price}</Text>
-            <TouchableOpacity
-                style={[styles.purchaseButton, { opacity: item.purchased || totalBalance < item.price ? 0.5 : 1 }]}
-                onPress={() => !item.purchased && handleBrochurePurchase(item)}
-                disabled={item.purchased || totalBalance < item.price}
-            >
-                <Text style={styles.purchaseButtonText}>{item.purchased ? 'Purchased' : 'Buy'}</Text>
-            </TouchableOpacity>
-        </View>
-    );
-
     if (showResult) {
         return (
             <ImageBackground
@@ -197,115 +199,68 @@ const Quiz = ({ topic, topicIndex }) => {
                 style={styles.backgroundImage}
                 resizeMode="cover"
             >
-                <View style={styles.overlay}>
-                    <View style={styles.container}>
-                        <Text style={styles.topicName}>Quiz Finished</Text>
-                        <Text style={styles.topicName}>{topic.topic}</Text>
-                        <Text style={styles.scoreText}>Final Score: {score}</Text>
-                        <Text style={styles.scoreText}> <Icons type={balance}/> {totalBalance}</Text>
-
-                        <TouchableOpacity style={styles.finishBtn} onPress={() => navigation.navigate('NewGameScreen')}>
-                            <Text style={styles.finishText}>Go back</Text>
-                        </TouchableOpacity>
-
-                        {nextTopicExists && (
-                            <TouchableOpacity style={styles.finishBtn} onPress={() => setNextLevelModalVisible(true)}>
-                                <Text style={styles.finishText}>Next</Text>
-                            </TouchableOpacity>
-                        )}
-
-                        <FlatList
-                            data={brochureData}
-                            renderItem={renderBrochureItem}
-                            keyExtractor={(item) => item.name}
-                            numColumns={2}
-                            contentContainerStyle={styles.brochuresContainer}
-                        />
-
-                        <Modal
-                            transparent={true}
-                            visible={nextLevelModalVisible}
-                            animationType="slide"
-                        >
-                            <View style={styles.modalContainer}>
-                                <View style={styles.modalContent}>
-                                    <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
-                                    <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
-                                    <Button title="Proceed" onPress={handleProceedToNextTopic} />
-                                </View>
-                            </View>
-                        </Modal>
-                    </View>
-                </View>
-            </ImageBackground>
-        );
-    }
-
-    const currentQuestion = topic.questions[currentQuestionIndex];
-    const correctOptionIndex = currentQuestion.options.indexOf(currentQuestion.answer);
-    const isCorrect = selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex] === currentQuestion.answer;
-
-    return (
-        <ImageBackground
-            source={topic.image}
-            style={styles.backgroundImage}
-            resizeMode="cover"
-        >
-            <View style={styles.overlay}>
+              <View style={styles.overlay}>
                 <View style={styles.container}>
+                    <Text style={styles.topicName}>Quiz Finished</Text>
                     <Text style={styles.topicName}>{topic.topic}</Text>
-                    <View style={styles.scoreContainer}>
-                        <Text style={styles.scoreText}>Score: {score}</Text>
-                        <TouchableOpacity
-                            style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
-                            onPress={handleHintPress}
-                            disabled={selectedOptionIndex !== null || hintApplied}
-                        >
-                            <Text style={styles.hintButtonText}>Hint</Text>
-                        </TouchableOpacity>
-                    </View>
-                    <View style={styles.questionContainer}>
-                        <Text style={styles.questionText}>{currentQuestion.question}</Text>
-                        {currentQuestion.options.map((option, index) => (
-                            <TouchableOpacity
-                                key={index}
-                                style={[
-                                    styles.optionButton,
-                                    selectedOptionIndex !== null && (
-                                        index === selectedOptionIndex
-                                            ? isCorrect
-                                                ? styles.correctOption
-                                                : styles.incorrectOption
-                                            : index === correctOptionIndex && hintApplied
-                                                ? styles.correctOption
-                                                : null
-                                    ),
-                                    selectedOptionIndex === null && hintApplied && index === correctOptionIndex ? styles.hintOption : null
-                                ]}
-                                onPress={() => handleOptionPress(index)}
-                                disabled={selectedOptionIndex !== null || hintApplied}
-                            >
-                                <Text style={styles.optionText}>{option}</Text>
-                            </TouchableOpacity>
-                        ))}
-                    </View>
-                    <TouchableOpacity
-                        style={[styles.nextButton, { opacity: nextEnabled ? 1 : 0.5 }]}
-                        onPress={handleNextPress}
-                        disabled={!nextEnabled}
-                    >
-                        <Text style={styles.nextButtonText}>Next</Text>
+                    <Text style={styles.scoreText}>Final Score: {score}</Text>
+                    <Text style={styles.scoreText}> <Icons type={balance}/> {totalBalance}</Text>
+
+                    <TouchableOpacity style={styles.finishBtn} onPress={() => navigation.navigate('NewGameScreen')}>
+                        <Text style={styles.finishText}>Go back</Text>
                     </TouchableOpacity>
+
+                    {nextTopicExists && (
+                        <TouchableOpacity style={styles.finishBtn} onPress={() => setNextLevelModalVisible(true)}>
+                            <Text style={styles.finishText}>Next</Text>
+                        </TouchableOpacity>
+                    )}
+
+<FlatList
+    data={brochuresForTopic}
+    keyExtractor={item => item.name}
+    renderItem={({ item }) => {
+        console.log('Rendering brochure:', item.name, 'Purchased status:', item.purchased);
+        return (
+            <View style={styles.brochureCard}>
+                <ImageBackground source={item.image} style={styles.brochureImage}>
+                    <Text style={styles.brochureTitle}>{item.name}</Text>
+                    <Text style={styles.brochureFact}>{item.fact.factName}</Text>
+                    <Text style={styles.brochureDescription}>{item.fact.description}</Text>
+                </ImageBackground>
+
+                <TouchableOpacity
+                    style={[
+                        styles.buyButton,
+                        { 
+                            backgroundColor: item.purchased || totalBalance < item.price ? 'gray' : 'green' 
+                        }
+                    ]}
+                    onPress={() => purchaseBrochure(item)}
+                    disabled={item.purchased || totalBalance < item.price}
+                >
+                    <Text style={styles.buyButtonText}>
+                        {item.purchased ? 'Purchased' : `Buy for ${item.price}`}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        );
+    }}
+/>
+
+
+
+
                     <Modal
                         transparent={true}
-                        visible={hintModalVisible}
+                        visible={nextLevelModalVisible}
                         animationType="slide"
                     >
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
-                                <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
-                                <Button title="Yes" onPress={() => handleHintPurchase(true)} />
-                                <Button title="No" onPress={() => handleHintPurchase(false)} />
+                                <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
+                                <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
+                                <Button title="Proceed" onPress={handleProceedToNextTopic} />
                             </View>
                         </View>
                     </Modal>
@@ -313,8 +268,81 @@ const Quiz = ({ topic, topicIndex }) => {
             </View>
         </ImageBackground>
     );
-};
+}
 
+const currentQuestion = topic.questions[currentQuestionIndex];
+const correctOptionIndex = currentQuestion.options.indexOf(currentQuestion.answer);
+const isCorrect = selectedOptionIndex !== null && currentQuestion.options[selectedOptionIndex] === currentQuestion.answer;
+
+return (
+    <ImageBackground
+        source={topic.image}
+        style={styles.backgroundImage}
+        resizeMode="cover"
+    >
+        <View style={styles.overlay}>
+            <View style={styles.container}>
+                <Text style={styles.topicName}>{topic.topic}</Text>
+                <View style={styles.scoreContainer}>
+                    <Text style={styles.scoreText}>Score: {score}</Text>
+                    <TouchableOpacity
+                        style={[styles.hintButton, { opacity: selectedOptionIndex !== null || hintApplied ? 0.5 : 1 }]}
+                        onPress={handleHintPress}
+                        disabled={selectedOptionIndex !== null || hintApplied}
+                    >
+                        <Text style={styles.hintButtonText}>Hint</Text>
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.questionContainer}>
+                    <Text style={styles.questionText}>{currentQuestion.question}</Text>
+                    {currentQuestion.options.map((option, index) => (
+                        <TouchableOpacity
+                            key={index}
+                            style={[
+                                styles.optionButton,
+                                selectedOptionIndex !== null && (
+                                    index === selectedOptionIndex
+                                        ? isCorrect
+                                            ? styles.correctOption
+                                            : styles.incorrectOption
+                                        : index === correctOptionIndex && hintApplied
+                                            ? styles.correctOption
+                                            : null
+                                ),
+                                selectedOptionIndex === null && hintApplied && index === correctOptionIndex ? styles.hintOption : null
+                            ]}
+                            onPress={() => handleOptionPress(index)}
+                            disabled={selectedOptionIndex !== null || hintApplied}
+                        >
+                            <Text style={styles.optionText}>{option}</Text>
+                        </TouchableOpacity>
+                    ))}
+                </View>
+                <TouchableOpacity
+                    style={[styles.nextButton, { opacity: nextEnabled ? 1 : 0.5 }]}
+                    onPress={handleNextPress}
+                    disabled={!nextEnabled}
+                >
+                    <Text style={styles.nextButtonText}>Next</Text>
+                </TouchableOpacity>
+                <Modal
+                    transparent={true}
+                    visible={hintModalVisible}
+                    animationType="slide"
+                >
+                    <View style={styles.modalContainer}>
+                        <View style={styles.modalContent}>
+                            <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
+                            <Button title="Yes" onPress={() => handleHintPurchase(true)} />
+                            <Button title="No" onPress={() => handleHintPurchase(false)} />
+                        </View>
+                    </View>
+                </Modal>
+            </View>
+        </View>
+    </ImageBackground>
+);
+};
 
 
 const styles = StyleSheet.create({

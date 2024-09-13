@@ -36,7 +36,7 @@ const App = () => {
         <Stack.Screen 
           name="QuizScreen" 
           component={QuizScreen} 
-          options={{ headerShown: false }} 
+          // options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="QuizGeniusScreen" 
@@ -46,7 +46,7 @@ const App = () => {
         <Stack.Screen 
           name="QuizExpertScreen" 
           component={QuizExpertScreen} 
-          options={{ headerShown: false }} 
+          // options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="AlbumScreen" 
