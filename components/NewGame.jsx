@@ -59,7 +59,7 @@ const NewGame = () => {
                 <TouchableOpacity 
                     style={[styles.modeBtn, { opacity: allTopicsEnabled ? 1 : 0.5 }]} 
                     onPress={handleExpertPress}
-                    // disabled={!allTopicsEnabled}
+                    disabled={!allTopicsEnabled}
                     >
                     <Text style={styles.modeBtnText}>Expert</Text>
                 </TouchableOpacity>

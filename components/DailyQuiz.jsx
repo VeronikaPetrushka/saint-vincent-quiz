@@ -19,8 +19,7 @@ const DailyQuiz = () => {
     const intervalRef = useRef(null);
     const balance = 'balance';
 
-    // Time allowed between quizzes (2 minutes = 120000ms)
-    const QUIZ_INTERVAL = 120000; // 2 minutes in milliseconds
+    const QUIZ_INTERVAL = 120000;
 
     useEffect(() => {
         checkQuizAvailability();

@@ -1,5 +1,3 @@
-// Background image
-
 import { SafeAreaView, View } from "react-native"
 import MainMenu from "../components/MainMenu"
 import MenuPanel from "../components/MenuPanel"

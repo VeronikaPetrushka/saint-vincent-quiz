@@ -41,7 +41,6 @@ const QuizGenius = () => {
     }, [quizFinished]);
 
     useEffect(() => {
-        // Load total balance from AsyncStorage when the component mounts
         const loadTotalBalance = async () => {
             try {
                 const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
@@ -59,7 +58,7 @@ const QuizGenius = () => {
     const updateTotalBalance = async (newBalance) => {
         try {
             await AsyncStorage.setItem('totalBalance', newBalance.toString());
-            setTotalBalance(newBalance); // Ensure state is updated after saving
+            setTotalBalance(newBalance);
         } catch (error) {
             console.error('Failed to save total balance:', error);
         }
