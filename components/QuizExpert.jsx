@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Dimensions, Alert } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { lettersGrid1, lettersGrid2, lettersGrid3, lettersGrid4, lettersGrid5 } from '../constants/letterGrid.js';
 import { words1, words2, words3, words4, words5 } from '../constants/words.js';
+import Icons from './Icons.jsx';
 
 const { width } = Dimensions.get('window');
 const gridSize = 12;
@@ -16,15 +18,33 @@ const QuizExpert = () => {
     const [foundWords, setFoundWords] = useState(new Set());
     const [timer, setTimer] = useState(60);
     const [isFinished, setIsFinished] = useState(false);
+    const [totalBalance, setTotalBalance] = useState(0);
 
     const letterGrids = [lettersGrid1, lettersGrid2, lettersGrid3, lettersGrid4, lettersGrid5];
     const wordLists = [words1, words2, words3, words4, words5];
     const currentGrid = letterGrids[currentGridIndex];
     const currentWords = wordLists[currentGridIndex];
 
+    const balance = 'balance';
+
+    useEffect(() => {
+        const loadTotalBalance = async () => {
+            try {
+                const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+                if (storedTotalBalance !== null) {
+                    setTotalBalance(parseInt(storedTotalBalance, 10));
+                }
+            } catch (error) {
+                console.error('Failed to load total balance:', error);
+            }
+        };
+
+        loadTotalBalance();
+    }, []);
+
     useEffect(() => {
         if (timer <= 0 || foundWords.size === currentWords.length) {
-            setIsFinished(true);
+            finishGame();
             return;
         }
         
@@ -40,6 +60,27 @@ const QuizExpert = () => {
 
         return () => clearInterval(interval);
     }, [timer, foundWords, currentWords]);
+
+    const updateTotalBalance = async (newBalance) => {
+        try {
+            await AsyncStorage.setItem('totalBalance', newBalance.toString());
+            setTotalBalance(newBalance);
+        } catch (error) {
+            console.error('Failed to save total balance:', error);
+        }
+    };
+
+    const finishGame = async () => {
+        if (foundWords.size === currentWords.length) {
+            const finalScore = 500;
+            const newBalance = totalBalance + finalScore;
+            await updateTotalBalance(newBalance);
+            Alert.alert('Congratulations!', `You've found all words. Your new balance is ${newBalance}`);
+        } else {
+            // Alert.alert('Game Over', 'You didn\'t find all the words. Try again!');
+        }
+        setIsFinished(true);
+    };
 
     const resetGame = () => {
         setHighlightedLetters([]);
@@ -192,19 +233,25 @@ const QuizExpert = () => {
                         </View>
                     ))}
                     <View style={styles.statsContainer}>
-                        <Text style={styles.statsText}>Total Words: {totalWords}</Text>
-                        <Text style={styles.statsText}>Words Found: {foundCount}</Text>
+                        <View style={styles.statsInnerContainer}>
+                        <Text style={styles.statsText}>{foundCount} / {totalWords}</Text>
+                        <Text style={styles.timerText}>{timer}s</Text>
+                        <View style={styles.balanceContainer}>
+                        <Icons type={balance}/>
+                        <Text style={styles.balanceText}>{totalBalance}</Text>
+                        </View>
+                        </View>
                         <Text style={styles.statsText}>Found Words:</Text>
                         {Array.from(foundWords).map((word, index) => (
                             <Text key={index} style={styles.foundWord}>{word}</Text>
                         ))}
-                        <Text style={styles.timerText}>Time Remaining: {timer}s</Text>
                     </View>
                 </>
             )}
         </View>
     );
 };
+
 
 const styles = StyleSheet.create({
     container: {
@@ -262,7 +309,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
     },
     statsText: {
-        fontSize: 16,
+        fontSize: 18,
         fontWeight: 'bold',
     },
     foundWord: {
@@ -272,30 +319,55 @@ const styles = StyleSheet.create({
     timerText: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 10,
+        marginLeft: 10
     },
     finishContainer: {
-        justifyContent: 'center',
         alignItems: 'center',
-        flex: 1,
+        padding: 20,
+        width: '100%'
     },
     finishText: {
         fontSize: 24,
         fontWeight: 'bold',
-        color: 'red',
-        marginBottom: 20,
+        color: '#333333',
+        marginBottom: 200,
+        marginTop: 50,
+        width: '100%'
     },
     button: {
-        backgroundColor: 'blue',
-        padding: 10,
-        borderRadius: 5,
+        backgroundColor: '#618e4d',
+        padding: 15,
+        borderRadius: 10,
         margin: 5,
+        width: 350,
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     buttonText: {
         color: 'white',
         fontSize: 18,
         fontWeight: 'bold',
     },
+    balanceContainer: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    balanceText: {
+        fontSize: 18,
+        marginLeft: 10
+    },
+    statsInnerContainer: {
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        width: 370,
+        marginBottom: 20,
+        borderRadius: 15,
+        backgroundColor: 'white',
+        paddingVertical: 10,
+        paddingHorizontal: 30
+    }
 });
 
 export default QuizExpert;

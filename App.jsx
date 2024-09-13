@@ -10,6 +10,8 @@ import QuizGeniusScreen from './screens/QuizGeniusScreen.jsx'
 import QuizExpertScreen from './screens/QuizExpertScreen.jsx';
 import AlbumScreen from './screens/AlbumScreen.jsx';
 import StoreScreen from './screens/StoreScreen.jsx';
+import ResultsScreen from './screens/ResultsScreen.jsx';
+import SettingsScreen from './screens/SettingsScreen.jsx';
 
 const Stack = createStackNavigator();
 
@@ -56,6 +58,16 @@ const App = () => {
         <Stack.Screen 
           name="StoreScreen" 
           component={StoreScreen} 
+          // options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="ResultsScreen" 
+          component={ResultsScreen} 
+          // options={{ headerShown: false }} 
+        />
+        <Stack.Screen 
+          name="SettingsScreen" 
+          component={SettingsScreen} 
           // options={{ headerShown: false }} 
         />
       </Stack.Navigator>

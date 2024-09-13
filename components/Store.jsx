@@ -1,100 +1,123 @@
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import brochures from '../constants/brochures.js';
 import Icons from './Icons';
 
 const Store = () => {
     const [totalBalance, setTotalBalance] = useState(0);
-    const [purchasedBrochures, setPurchasedBrochures] = useState({});
-    const balance = 'balance';
+    const [brochuresData, setBrochuresData] = useState([]);
+    const balanceIcon = 'balance';
 
     useEffect(() => {
-        const loadTotalBalance = async () => {
+        const loadData = async () => {
             try {
                 const balance = await AsyncStorage.getItem('totalBalance');
+                const storedBrochures = await AsyncStorage.getItem('brochures');
+                
                 if (balance !== null) {
                     setTotalBalance(parseInt(balance, 10));
                 }
+                
+                if (storedBrochures) {
+                    setBrochuresData(JSON.parse(storedBrochures));
+                } else {
+                    const brochures = require('../constants/brochures.js');
+                    setBrochuresData(brochures);
+                    await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
+                }
             } catch (error) {
-                console.error('Failed to load balance from AsyncStorage:', error);
+                console.error('Failed to load data from AsyncStorage:', error);
             }
         };
 
-        // const loadPurchasedBrochures = async () => {
-        //     try {
-        //         const storedBrochures = await AsyncStorage.getItem('brochureData');
-        //         if (storedBrochures !== null) {
-        //             setPurchasedBrochures(JSON.parse(storedBrochures));
-        //         }
-        //     } catch (error) {
-        //         console.error('Failed to load purchased brochures:', error);
-        //     }
-        // };
-
-        loadTotalBalance();
-        // loadPurchasedBrochures();
+        loadData();
     }, []);
 
-    // const handlePurchase = async (brochure) => {
-    //     const price = brochure.price;
-    //     if (totalBalance >= price) {
-    //         const newBalance = totalBalance - price;
-    //         setTotalBalance(newBalance);
+    const handlePurchase = async (brochure) => {
+        const price = brochure.price;
+        if (totalBalance >= price) {
+            const newBalance = totalBalance - price;
+            setTotalBalance(newBalance);
 
-    //         const updatedBrochureData = { ...purchasedBrochures, [brochure.name]: { purchased: true } };
-    //         setPurchasedBrochures(updatedBrochureData);
+            const updatedBrochuresData = brochuresData.map(topic => {
+                if (topic.topic === brochure.topic) {
+                    return {
+                        ...topic,
+                        cards: topic.cards.map(card =>
+                            card.name === brochure.name
+                                ? { ...card, purchased: true }
+                                : card
+                        )
+                    };
+                }
+                return topic;
+            });
 
-    //         await AsyncStorage.setItem('totalBalance', newBalance.toString());
-    //         await AsyncStorage.setItem('brochureData', JSON.stringify(updatedBrochureData));
-    //     }
-    // };
+            try {
+                await AsyncStorage.setItem('totalBalance', newBalance.toString());
+                await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochuresData));
+            } catch (error) {
+                console.error('Failed to save data to AsyncStorage:', error);
+            }
 
-    // const isBrochurePurchased = (brochureName) => {
-    //     return purchasedBrochures[brochureName]?.purchased;
-    // };
+            setBrochuresData(updatedBrochuresData);
+        }
+    };
 
-    // const renderBrochureItem = ({ item }) => {
-    //     const purchased = isBrochurePurchased(item.name);
-    //     return (
-    //         <View style={styles.brochureCard}>
-    //             <Image source={item.image} style={styles.brochureImage} />
-    //             <Text style={styles.brochureTitle}>{item.name}</Text>
-    //             <TouchableOpacity
-    //                 style={[styles.purchaseButton, (totalBalance < item.price || purchased) && styles.disabledButton]}
-    //                 onPress={() => handlePurchase(item)}
-    //                 disabled={totalBalance < item.price || purchased}
-    //             >
-    //                 <Text style={styles.purchaseButtonText}>
-    //                     {purchased ? 'Purchased' : `$ ${item.price}`}
-    //                 </Text>
-    //             </TouchableOpacity>
-    //         </View>
-    //     );
-    // };
+    const isBrochurePurchased = (brochureName, topic) => {
+        const topicData = brochuresData.find(b => b.topic === topic);
+        return topicData?.cards.some(card => card.name === brochureName && card.purchased);
+    };
+
+    const renderBrochureItem = ({ item, topic }) => {
+        const purchased = isBrochurePurchased(item.name, topic);
+        return (
+            <View style={styles.brochureCard}>
+                <Image source={item.image} style={styles.brochureImage} />
+                <Text style={styles.brochureTitle}>{item.name}</Text>
+                <TouchableOpacity
+                    style={[
+                        styles.purchaseButton,
+                        (totalBalance < item.price || purchased) && styles.disabledButton
+                    ]}
+                    onPress={() => handlePurchase(item)}
+                    disabled={totalBalance < item.price || purchased}
+                >
+                    <Text style={styles.purchaseButtonText}>
+                        {purchased ? 'Purchased' : `$ ${item.price}`}
+                    </Text>
+                </TouchableOpacity>
+            </View>
+        );
+    };
 
     return (
         <SafeAreaView style={styles.wrapper}>
             <ScrollView style={styles.container}>
-                <Text style={styles.balanceText}><Icons type={balance} /> {totalBalance}</Text>
+                <View style={styles.balanceContainer}>
+                    <Icons type={balanceIcon} />
+                    <Text style={styles.balanceText}>{totalBalance}</Text>
+                </View>
 
-                {/* {brochures.map((topic, index) => (
-                    <View key={index}>
+                {brochuresData.map((topic, index) => (
+                    <View key={index} style={{ marginBottom: 50 }}>
                         <Text style={styles.topicTitle}>{topic.topic}</Text>
                         <FlatList
                             data={topic.cards}
-                            renderItem={renderBrochureItem}
-                            keyExtractor={(item) => item.name}
+                            renderItem={({ item }) => renderBrochureItem({ item, topic: topic.topic })}
+                            keyExtractor={item => item.name}
                             numColumns={2}
                             scrollEnabled={false}
                             style={styles.list}
                         />
                     </View>
-                ))} */}
+                ))}
             </ScrollView>
         </SafeAreaView>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -107,15 +130,29 @@ const styles = StyleSheet.create({
         height: '100%',
         backgroundColor: '#91b585',
     },
+    balanceContainer: {
+        flexDirection: 'row',
+        padding: 12,
+        backgroundColor: '#fff',
+        borderRadius: 15,
+        width: 120,
+        maxWidth: 200,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 20,
+        alignSelf: 'center'
+    },
     balanceText: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginBottom: 16,
+        marginLeft: 10
     },
     topicTitle: {
         fontSize: 22,
         fontWeight: 'bold',
         marginBottom: 20,
+        color: '#333333',
+        marginLeft: 7
     },
     brochureCard: {
         margin: 8,
@@ -123,8 +160,9 @@ const styles = StyleSheet.create({
         backgroundColor: '#f9f9f9',
         borderRadius: 8,
         alignItems: 'center',
+        justifyContent: 'space-between',
         width: 175,
-        height: 250,
+        height: 300,
     },
     brochureImage: {
         width: 130,
@@ -151,7 +189,7 @@ const styles = StyleSheet.create({
     purchaseButtonText: {
         color: '#fff',
         fontSize: 16,
-    },
+    }
 });
 
 export default Store;

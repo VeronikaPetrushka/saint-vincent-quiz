@@ -1,5 +1,3 @@
-// Share results button on finish
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -68,8 +66,12 @@ const QuizGenius = () => {
         if (selectedOptionIndex === null && !hintApplied) {
             setSelectedOptionIndex(index);
             const isCorrect = index === currentQuestion?.options.indexOf(currentQuestion?.answer);
-            setScore(prevScore => Math.max(0, prevScore + (isCorrect ? 100 : -100)));
-            
+            setScore(prevScore => {
+                const newScore = Math.max(0, prevScore + (isCorrect ? 100 : -100));
+                console.log('Score updated to:', newScore);
+                return newScore;
+            });
+    
             if (isCorrect) {
                 setCorrectAnswersInRow(prev => {
                     const newCount = prev + 1;
@@ -85,6 +87,7 @@ const QuizGenius = () => {
             setHintApplied(true);
         }
     };
+    
 
     const handleNextQuestion = () => {
         if (currentQuestionIndex < shuffledQuestions.length - 1) {
@@ -120,10 +123,23 @@ const QuizGenius = () => {
     };
 
     const finishQuiz = async () => {
-        const newBalance = totalBalance + score;
-        await updateTotalBalance(newBalance);
+        setScore(prevScore => {
+            const newBalance = totalBalance + prevScore;
+    
+            console.log('Final Score:', prevScore);
+            console.log('Current Total Balance:', totalBalance);
+            console.log('New Balance:', newBalance);
+    
+            updateTotalBalance(newBalance)
+                .then(() => console.log('Balance updated successfully.'))
+                .catch(error => console.error('Error updating total balance:', error));
+    
+            return prevScore;
+        });
+    
         setQuizFinished(true);
     };
+    
 
     const restartQuiz = () => {
         setCurrentQuestionIndex(0);
@@ -141,9 +157,9 @@ const QuizGenius = () => {
     const getOptionStyle = (index) => {
         let backgroundColor = 'transparent';
         if (selectedOptionIndex === index) {
-            backgroundColor = index === currentQuestion?.options.indexOf(currentQuestion?.answer) ? 'lightgreen' : 'lightcoral';
+            backgroundColor = index === currentQuestion?.options.indexOf(currentQuestion?.answer) ? '#6aa84f' : 'red';
         } else if (index === currentQuestion?.options.indexOf(currentQuestion?.answer) && selectedOptionIndex !== null) {
-            backgroundColor = 'lightgreen';
+            backgroundColor = '#6aa84f';
         }
         return [styles.optionButton, { backgroundColor }];
     };
@@ -224,6 +240,7 @@ const QuizGenius = () => {
         </ImageBackground>
     );
 };
+
 
 
 

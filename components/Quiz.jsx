@@ -1,4 +1,3 @@
-// Topic card purchase status and button update
 // highlight correct in green, even when wrong selected
 // Total balance - inconsistent update +- 100
 
@@ -28,21 +27,38 @@ const Quiz = ({ topic, topicIndex }) => {
     const { unlockNextTopic, enabledTopics } = useQuiz();
 
     useEffect(() => {
-        loadTotalBalance();
-        loadBrochures();
-        getBrochuresForCurrentTopic();
-    }, [topic]);
-    
-    const loadTotalBalance = async () => {
-        try {
-            const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
-            if (storedTotalBalance !== null) {
-                setTotalBalance(parseInt(storedTotalBalance, 10));
+        const initializeData = async () => {
+            try {
+                const storedTotalBalance = await AsyncStorage.getItem('totalBalance');
+                if (storedTotalBalance !== null) {
+                    setTotalBalance(parseInt(storedTotalBalance, 10));
+                }
+                
+                const storedBrochures = await AsyncStorage.getItem('brochures');
+                if (storedBrochures) {
+                    setPurchasedBrochures(JSON.parse(storedBrochures));
+                } else {
+                    await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
+                    setPurchasedBrochures(brochures);
+                }
+            } catch (error) {
+                console.error('Failed to load data:', error);
             }
-        } catch (error) {
-            console.error('Failed to load total balance:', error);
-        }
-    };
+        };
+
+        initializeData();
+    }, []);
+
+    useEffect(() => {
+        const getBrochuresForCurrentTopic = () => {
+            const topicBrochures = purchasedBrochures.find(b => b.topic === topic.topic);
+            if (topicBrochures) {
+                setBrochuresForTopic(topicBrochures.cards);
+            }
+        };
+
+        getBrochuresForCurrentTopic();
+    }, [purchasedBrochures, topic]);
 
     const updateTotalBalance = async (newBalance) => {
         try {
@@ -53,30 +69,9 @@ const Quiz = ({ topic, topicIndex }) => {
         }
     };
 
-    const loadBrochures = async () => {
-        try {
-            const storedBrochures = await AsyncStorage.getItem('brochures');
-            if (storedBrochures) {
-                setPurchasedBrochures(JSON.parse(storedBrochures));
-            } else {
-                await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
-                setPurchasedBrochures(brochures);
-            }
-        } catch (error) {
-            console.error('Failed to load brochures:', error);
-        }
-    };
-
-    const getBrochuresForCurrentTopic = () => {
-        const topicBrochures = brochures.find(b => b.topic === topic.topic);
-        if (topicBrochures) {
-            setBrochuresForTopic(topicBrochures.cards);
-        }
-    };
-
     const purchaseBrochure = async (brochure) => {
         console.log('Attempting to purchase brochure:', brochure.name);
-    
+
         if (totalBalance >= brochure.price) {
             const updatedBrochures = purchasedBrochures.map(b => {
                 if (b.topic === topic.topic) {
@@ -93,14 +88,22 @@ const Quiz = ({ topic, topicIndex }) => {
                 }
                 return b;
             });
-    
+
             const newBalance = totalBalance - brochure.price;
-    
+
             setPurchasedBrochures(updatedBrochures);
+            const updatedBrochuresForTopic = brochuresForTopic.map(card => {
+                if (card.name === brochure.name) {
+                    return { ...card, purchased: true };
+                }
+                return card;
+            });
+            setBrochuresForTopic(updatedBrochuresForTopic);
+
             console.log('Updated brochures:', updatedBrochures);
             console.log('Updated balance:', newBalance);
             await updateTotalBalance(newBalance);
-    
+
             try {
                 await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochures));
                 console.log('Brochures saved to AsyncStorage.');
@@ -110,9 +113,7 @@ const Quiz = ({ topic, topicIndex }) => {
         } else {
             Alert.alert('Insufficient balance', 'You do not have enough balance to buy this brochure.');
         }
-    };    
-    
-
+    };
 
     const handleOptionPress = (index) => {
         if (selectedOptionIndex === null && !hintApplied) {
@@ -401,13 +402,13 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     correctOption: {
-        backgroundColor: 'lightgreen',
+        backgroundColor: '#6aa84f',
     },
     incorrectOption: {
         backgroundColor: 'red',
     },
     hintOption: {
-        backgroundColor: 'lightgreen',
+        backgroundColor: '#6aa84f',
     },
     nextButton: {
         padding: 15,
@@ -488,7 +489,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: 170,
-        height: 260,
+        height: 300,
         margin: 5
     },
     brochureImage: {

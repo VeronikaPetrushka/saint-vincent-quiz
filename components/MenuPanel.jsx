@@ -11,14 +11,25 @@ const MenuPanel = () => {
     const gallery = 'gallery';
     const results = 'results';
 
+    const handleNavigateToHome = () => {
+        navigation.navigate('MainMenuScreen');
+    };
+
     const handleNavigateToGallery = () => {
             navigation.navigate('AlbumScreen');
         };
 
-    const handleNavigateToStore= () => {
+    const handleNavigateToStore = () => {
         navigation.navigate('StoreScreen');
     };
+    
+    const handleNavigateToResults = () => {
+        navigation.navigate('ResultsScreen');
+    };
 
+    const handleNavigateToSettings = () => {
+        navigation.navigate('SettingsScreen');
+    };
 
     return (
         <SafeAreaView style={styles.container}>
@@ -28,13 +39,13 @@ const MenuPanel = () => {
             <TouchableOpacity onPress={handleNavigateToGallery}>
                 <Icons type={gallery}/>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleNavigateToHome}>
                 <Icons type={home}/>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleNavigateToResults}>
                 <Icons type={results}/>
             </TouchableOpacity>
-            <TouchableOpacity>
+            <TouchableOpacity onPress={handleNavigateToSettings}>
                 <Icons type={settings}/>
             </TouchableOpacity>
         </SafeAreaView>

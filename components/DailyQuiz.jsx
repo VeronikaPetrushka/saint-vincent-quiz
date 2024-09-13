@@ -1,5 +1,3 @@
-// Set timer for 24h
-
 import React, { useState, useEffect, useRef } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
@@ -140,7 +138,7 @@ const DailyQuiz = () => {
             <View style={styles.container}>
                 <Text style={styles.scoreTextFinal}>You have completed all your daily tasks for today. See you tomorrow!</Text>
                 <Text style={styles.scoreTextFinal}>Final Score: {score}</Text>
-                <Text style={styles.scoreTextFinal}>Total Balance: {totalBalance}</Text>
+                <Text style={styles.scoreTextFinal}>Balance: {totalBalance}</Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
                     <Text style={styles.goBackText}>Go Back</Text>
                 </TouchableOpacity>
@@ -241,8 +239,8 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     correctOption: {
-        backgroundColor: 'green',
-        borderColor: 'green'
+        backgroundColor: '#6aa84f',
+        borderColor: '#6aa84f'
     },
     incorrectOption: {
         backgroundColor: 'red',
@@ -260,7 +258,9 @@ const styles = StyleSheet.create({
         color: 'white'
     },
     scoreTextFinal: {
-        marginBottom: 50
+        marginBottom: 50,
+        color: 'white',
+        fontSize: 18,
     }
 });
 

@@ -1,73 +1,86 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, Modal, ScrollView } from 'react-native';
+import React, { useState, useCallback } from 'react';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 
 const Album = () => {
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
-    const [modalVisible, setModalVisible] = useState(false);
-    const [selectedFact, setSelectedFact] = useState(null);
+    const [selectedBrochure, setSelectedBrochure] = useState(null);
+    const [currentPage, setCurrentPage] = useState(0);
     const navigation = useNavigation();
 
-    // // Function to load purchased brochures
-    // const loadPurchasedBrochures = useCallback(async () => {
-    //     try {
-    //         const storedBrochures = await AsyncStorage.getItem('brochureData');
-    //         console.log('Stored brochures data:', storedBrochures);
-    
-    //         if (storedBrochures) {
-    //             const brochures = JSON.parse(storedBrochures);
-    
-    //             // Convert object to array using Object.values()
-    //             const brochuresArray = Object.values(brochures);
-    
-    //             // Filter for purchased brochures
-    //             const filteredBrochures = brochuresArray.filter(brochure => brochure.purchased);
-    
-    //             setPurchasedBrochures(filteredBrochures);
-    //         } else {
-    //             console.log('No purchased brochures found.');
-    //             setPurchasedBrochures([]); // Initialize with an empty array if nothing is stored
-    //         }
-    //     } catch (error) {
-    //         console.error('Failed to load purchased brochures:', error);
-    //     }
-    // }, []);
-    
+    const loadPurchasedBrochures = useCallback(async () => {
+        try {
+            const storedBrochures = await AsyncStorage.getItem('brochures');
+            console.log('Stored brochures data:', storedBrochures);
 
-    // // Load purchased brochures when the screen is focused
-    // useFocusEffect(
-    //     useCallback(() => {
-    //         loadPurchasedBrochures();
-    //     }, [loadPurchasedBrochures])
-    // );
+            if (storedBrochures) {
+                const brochures = JSON.parse(storedBrochures);
 
-    // const handleNavigateToStore = () => {
-    //     navigation.navigate('StoreScreen');
-    // };
+                const purchasedBrochuresList = brochures
+                    .flatMap(topic => topic.cards)
+                    .filter(card => card.purchased); 
 
-    // const handleBrochurePress = (fact) => {
-    //     setSelectedFact(fact);
-    //     setModalVisible(true);
-    // };
+                setPurchasedBrochures(purchasedBrochuresList);
+            } else {
+                console.log('No purchased brochures found.');
+                setPurchasedBrochures([]);
+            }
+        } catch (error) {
+            console.error('Failed to load purchased brochures:', error);
+        }
+    }, []);
 
-    // const renderBrochureItem = ({ item }) => (
-    //     <TouchableOpacity onPress={() => handleBrochurePress(item.fact)}>
-    //         <View style={styles.brochureCard}>
-    //             <Image
-    //                 source={item.image}
-    //                 style={styles.brochureImage}
-    //             />
-    //             <Text style={styles.brochureTitle}>{item.name}</Text>
-    //         </View>
-    //     </TouchableOpacity>
-    // );
+    useFocusEffect(
+        useCallback(() => {
+            loadPurchasedBrochures(); 
+        }, [loadPurchasedBrochures])
+    );
+
+    const handleNavigateToStore = () => {
+        navigation.navigate('StoreScreen');
+    };
+
+    const handleBrochurePress = (item) => {
+        if (selectedBrochure && selectedBrochure.name === item.name) {
+            setSelectedBrochure(null);
+        } else {
+            setSelectedBrochure(item);
+        }
+    };
+
+    const renderBrochureItem = ({ item }) => (
+        <TouchableOpacity onPress={() => handleBrochurePress(item)}>
+            <View style={styles.brochureCard}>
+                {selectedBrochure && selectedBrochure.name === item.name ? (
+                    <ScrollView contentContainerStyle={styles.factContainer}>
+                        <Text style={styles.factTitle}>{selectedBrochure.fact.factName}</Text>
+                        <Text style={styles.factDescription}>{selectedBrochure.fact.description}</Text>
+                    </ScrollView>
+                ) : (
+                    <>
+                        <Image
+                            source={item.image}
+                            style={styles.brochureImage}
+                        />
+                        <Text style={styles.brochureTitle}>{item.name}</Text>
+                    </>
+                )}
+            </View>
+        </TouchableOpacity>
+    );
+
+    const handleScroll = (event) => {
+        const contentOffsetX = event.nativeEvent.contentOffset.x;
+        const newPage = Math.floor(contentOffsetX / styles.brochureCard.width);
+        setCurrentPage(newPage);
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Album</Text>
-            {/* {purchasedBrochures.length === 0 ? (
-                <View styles={{ width: '100%' }}>
+            {purchasedBrochures.length === 0 ? (
+                <View style={{ width: '100%' }}>
                     <Text style={styles.emptyText}>No purchased brochures yet.</Text>
                     <TouchableOpacity
                         style={styles.storeButton}
@@ -77,40 +90,30 @@ const Album = () => {
                     </TouchableOpacity>
                 </View>
             ) : (
-                <FlatList
-                    data={purchasedBrochures}
-                    renderItem={renderBrochureItem}
-                    keyExtractor={(item) => item.name}
-                    numColumns={2}
-                    contentContainerStyle={styles.brochuresContainer}
-                />
-            )}
-
-            <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalContent}>
-                        <ScrollView>
-                            {selectedFact && (
-                                <>
-                                    <Text style={styles.factTitle}>{selectedFact.factName}</Text>
-                                    <Text style={styles.factDescription}>{selectedFact.description}</Text>
-                                </>
-                            )}
-                        </ScrollView>
-                        <TouchableOpacity
-                            style={styles.closeButton}
-                            onPress={() => setModalVisible(false)}
-                        >
-                            <Text style={styles.closeButtonText}>Close</Text>
-                        </TouchableOpacity>
+                <View>
+                    <FlatList
+                        data={purchasedBrochures}
+                        renderItem={renderBrochureItem}
+                        keyExtractor={(item) => item.name}
+                        horizontal
+                        pagingEnabled
+                        onScroll={handleScroll}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={styles.brochuresContainer}
+                    />
+                    <View style={styles.dotsContainer}>
+                        {purchasedBrochures.map((_, index) => (
+                            <View
+                                key={index}
+                                style={[
+                                    styles.dot,
+                                    { backgroundColor: currentPage === index ? '#618e4d' : '#ccc' }
+                                ]}
+                            />
+                        ))}
                     </View>
                 </View>
-            </Modal> */}
+            )}
         </View>
     );
 };
@@ -121,7 +124,8 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         height: "110%",
         width: '100%',
-        backgroundColor: '#91b585'
+        backgroundColor: '#91b585',
+        paddingBottom: 170
     },
     title: {
         fontSize: 24,
@@ -138,17 +142,18 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 15,
         alignItems: 'center',
-        width: 175,
-        height: 230
+        justifyContent: 'center', // Center content vertically
+        width: 370,
+        height: 550
     },
     brochureImage: {
-        width: 130,
-        height: 170,
+        width: 330,
+        height: 430,
         marginBottom: 8,
         borderRadius: 10
     },
     brochureTitle: {
-        fontSize: 18,
+        fontSize: 22,
         fontWeight: 'bold',
     },
     emptyText: {
@@ -171,38 +176,31 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
     },
-    modalContainer: {
-        flex: 1,
+    dotsContainer: {
+        flexDirection: 'row',
         justifyContent: 'center',
-        alignItems: 'center',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        marginTop: 10
     },
-    modalContent: {
-        width: '90%',
-        backgroundColor: '#fff',
-        borderRadius: 10,
-        padding: 20,
+    dot: {
+        width: 10,
+        height: 10,
+        borderRadius: 5,
+        margin: 3
+    },
+    factContainer: {
+        padding: 10,
+        alignItems: 'center'
     },
     factTitle: {
         fontSize: 22,
         fontWeight: 'bold',
-        marginBottom: 10,
+        marginBottom: 10
     },
     factDescription: {
-        fontSize: 16,
+        fontSize: 18,
         color: '#555',
-    },
-    closeButton: {
-        marginTop: 20,
-        padding: 12,
-        backgroundColor: '#007BFF',
-        borderRadius: 8,
-        alignItems: 'center',
-    },
-    closeButtonText: {
-        color: '#fff',
-        fontSize: 16,
-    },
+        textAlign: 'center'
+    }
 });
 
 export default Album;
