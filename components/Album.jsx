@@ -13,16 +13,18 @@ const Album = () => {
     const loadPurchasedBrochures = useCallback(async () => {
         try {
             const storedBrochures = await AsyncStorage.getItem('brochures');
-            console.log('Stored brochures data:', storedBrochures);
+            const storedPurchasedState = await AsyncStorage.getItem('purchasedState');
 
             if (storedBrochures) {
                 const brochures = JSON.parse(storedBrochures);
+                const purchasedState = storedPurchasedState ? JSON.parse(storedPurchasedState) : {};
+
                 const purchasedBrochuresList = brochures
                     .flatMap(topic => topic.cards)
-                    .filter(card => card.purchased); 
+                    .filter(card => card.purchased || purchasedState[card.name]);
+
                 setPurchasedBrochures(purchasedBrochuresList);
             } else {
-                console.log('No purchased brochures found.');
                 setPurchasedBrochures([]);
             }
         } catch (error) {
@@ -132,6 +134,8 @@ const Album = () => {
     );
 };
 
+
+
 const styles = StyleSheet.create({
     container: {
         padding: 16,
@@ -156,12 +160,13 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 15,
         alignItems: 'center',
-        justifyContent: 'center',
+        justifyContent: 'space-between',
+        minWidth: 300,
         width: 370,
         height: 550
     },
     brochureImage: {
-        width: 330,
+        width: "100%",
         height: 430,
         marginBottom: 8,
         borderRadius: 10
@@ -197,7 +202,8 @@ const styles = StyleSheet.create({
     dotsContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginTop: 10
+        marginTop: 10,
+        width: '100%'
     },
     dot: {
         width: 10,

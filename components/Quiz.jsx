@@ -19,6 +19,7 @@ const Quiz = ({ topic, topicIndex }) => {
     const [nextLevelModalVisible, setNextLevelModalVisible] = useState(false);
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
     const [brochuresForTopic, setBrochuresForTopic] = useState([]);
+    const [purchasedState, setPurchasedState] = useState({});
     const balance = 'balance';
 
     const { unlockNextTopic, enabledTopics } = useQuiz();
@@ -33,7 +34,13 @@ const Quiz = ({ topic, topicIndex }) => {
                 
                 const storedBrochures = await AsyncStorage.getItem('brochures');
                 if (storedBrochures) {
-                    setPurchasedBrochures(JSON.parse(storedBrochures));
+                    const brochuresData = JSON.parse(storedBrochures);
+                    setPurchasedBrochures(brochuresData);
+
+                    const storedPurchasedState = await AsyncStorage.getItem('purchasedState');
+                    if (storedPurchasedState) {
+                        setPurchasedState(JSON.parse(storedPurchasedState));
+                    }
                 } else {
                     await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
                     setPurchasedBrochures(brochures);
@@ -67,8 +74,6 @@ const Quiz = ({ topic, topicIndex }) => {
     };
 
     const purchaseBrochure = async (brochure) => {
-        console.log('Attempting to purchase brochure:', brochure.name);
-
         if (totalBalance >= brochure.price) {
             const updatedBrochures = purchasedBrochures.map(b => {
                 if (b.topic === topic.topic) {
@@ -76,7 +81,6 @@ const Quiz = ({ topic, topicIndex }) => {
                         ...b,
                         cards: b.cards.map(card => {
                             if (card.name === brochure.name) {
-                                console.log('Updating purchased status for brochure:', brochure.name);
                                 return { ...card, purchased: true };
                             }
                             return card;
@@ -97,15 +101,19 @@ const Quiz = ({ topic, topicIndex }) => {
             });
             setBrochuresForTopic(updatedBrochuresForTopic);
 
-            console.log('Updated brochures:', updatedBrochures);
-            console.log('Updated balance:', newBalance);
+            const newPurchasedState = {
+                ...purchasedState,
+                [brochure.name]: true
+            };
+            setPurchasedState(newPurchasedState);
+
             await updateTotalBalance(newBalance);
 
             try {
                 await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochures));
-                console.log('Brochures saved to AsyncStorage.');
+                await AsyncStorage.setItem('purchasedState', JSON.stringify(newPurchasedState));
             } catch (error) {
-                console.error('Failed to save brochures to AsyncStorage:', error);
+                console.error('Failed to save data to AsyncStorage:', error);
             }
         } else {
             Alert.alert('Insufficient balance', 'You do not have enough balance to buy this brochure.');
@@ -214,38 +222,38 @@ const Quiz = ({ topic, topicIndex }) => {
                         </TouchableOpacity>
                     )}
 
-<FlatList
-    data={brochuresForTopic}
-    keyExtractor={item => item.name}
-    numColumns={2}
-    style={styles.brochureList}
-    renderItem={({ item }) => {
-        console.log('Rendering brochure:', item.name, 'Purchased status:', item.purchased);
-        return (
-            <View style={styles.brochureCard}>
-                <ImageBackground source={item.image} style={styles.brochureImage}>
-                </ImageBackground>
+                    <FlatList
+                        data={brochuresForTopic}
+                        keyExtractor={item => item.name}
+                        numColumns={2}
+                        style={styles.brochureList}
+                        renderItem={({ item }) => {
+                            const isPurchased = purchasedState[item.name] || item.purchased;
+                            return (
+                                <View style={styles.brochureCard}>
+                                    <ImageBackground source={item.image} style={styles.brochureImage}>
+                                    </ImageBackground>
 
-                <Text style={styles.brochureTitle}>{item.name}</Text>
+                                    <Text style={styles.brochureTitle}>{item.name}</Text>
 
-                <TouchableOpacity
-                    style={[
-                        styles.buyButton,
-                        { 
-                            backgroundColor: item.purchased || totalBalance < item.price ? 'gray' : 'green' 
-                        }
-                    ]}
-                    onPress={() => purchaseBrochure(item)}
-                    disabled={item.purchased || totalBalance < item.price}
-                >
-                    <Text style={styles.buyButtonText}>
-                        {item.purchased ? 'Purchased' : `${item.price}`}
-                    </Text>
-                </TouchableOpacity>
-            </View>
-        );
-    }}
-/>
+                                    <TouchableOpacity
+                                        style={[
+                                            styles.buyButton,
+                                            { 
+                                                backgroundColor: isPurchased || totalBalance < item.price ? 'gray' : 'green' 
+                                            }
+                                        ]}
+                                        onPress={() => purchaseBrochure(item)}
+                                        disabled={isPurchased || totalBalance < item.price}
+                                    >
+                                        <Text style={styles.buyButtonText}>
+                                            {isPurchased ? 'Purchased' : `${item.price}`}
+                                        </Text>
+                                    </TouchableOpacity>
+                                </View>
+                            );
+                        }}
+                    />
 
                     <Modal
                         transparent={true}
@@ -494,12 +502,12 @@ const styles = StyleSheet.create({
         marginVertical: 10,
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: 170,
+        width: "48%",
         height: 330,
         margin: 5
     },
     brochureImage: {
-        width: 140,
+        width: "100%",
         height: 200,
         borderRadius: 10,
         marginBottom: 10,

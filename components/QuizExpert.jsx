@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
         padding: 15,
         borderRadius: 10,
         margin: 5,
-        width: 350,
+        width: "100%",
         alignItems: 'center',
         justifyContent: 'center'
     },
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-        width: 370,
+        width: "100%",
         marginBottom: 20,
         borderRadius: 15,
         backgroundColor: 'white',

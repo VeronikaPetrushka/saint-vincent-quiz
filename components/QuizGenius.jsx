@@ -364,7 +364,7 @@ const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginVertical: 10,
         marginBottom: 200,
-        width: 370,
+        width: "100%",
         padding: 10,
         paddingHorizontal: 30,
         backgroundColor: 'white',

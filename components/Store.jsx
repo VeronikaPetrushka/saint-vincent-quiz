@@ -1,5 +1,3 @@
-// purchase status update when item is bought directly in store
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -8,6 +6,7 @@ import Icons from './Icons';
 const Store = ({ navigation }) => {
     const [totalBalance, setTotalBalance] = useState(0);
     const [brochuresData, setBrochuresData] = useState([]);
+    const [purchasedState, setPurchasedState] = useState({});
     const balanceIcon = 'balance';
 
     useEffect(() => {
@@ -15,17 +14,22 @@ const Store = ({ navigation }) => {
             try {
                 const balance = await AsyncStorage.getItem('totalBalance');
                 const storedBrochures = await AsyncStorage.getItem('brochures');
-                
+                const storedPurchasedState = await AsyncStorage.getItem('purchasedState');
+
                 if (balance !== null) {
                     setTotalBalance(parseInt(balance, 10));
                 }
-                
+
                 if (storedBrochures) {
                     setBrochuresData(JSON.parse(storedBrochures));
                 } else {
                     const brochures = require('../constants/brochures.js');
                     setBrochuresData(brochures);
                     await AsyncStorage.setItem('brochures', JSON.stringify(brochures));
+                }
+
+                if (storedPurchasedState) {
+                    setPurchasedState(JSON.parse(storedPurchasedState));
                 }
             } catch (error) {
                 console.error('Failed to load data from AsyncStorage:', error);
@@ -55,20 +59,27 @@ const Store = ({ navigation }) => {
                 return topic;
             });
 
+            setBrochuresData(updatedBrochuresData);
+
+            const newPurchasedState = {
+                ...purchasedState,
+                [brochure.name]: true
+            };
+            setPurchasedState(newPurchasedState);
+
             try {
                 await AsyncStorage.setItem('totalBalance', newBalance.toString());
                 await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochuresData));
+                await AsyncStorage.setItem('purchasedState', JSON.stringify(newPurchasedState));
             } catch (error) {
                 console.error('Failed to save data to AsyncStorage:', error);
             }
-
-            setBrochuresData(updatedBrochuresData);
         }
     };
 
     const isBrochurePurchased = (brochureName, topic) => {
         const topicData = brochuresData.find(b => b.topic === topic);
-        return topicData?.cards.some(card => card.name === brochureName && card.purchased);
+        return topicData?.cards.some(card => card.name === brochureName && card.purchased) || purchasedState[brochureName];
     };
 
     const renderBrochureItem = ({ item, topic }) => {
@@ -102,7 +113,7 @@ const Store = ({ navigation }) => {
                     <Text style={styles.balanceText}>{totalBalance}</Text>
                 </View>
 
-                {!brochuresData ? (
+                {!brochuresData.length ? (
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyMessage}>Try the quiz and come back to shop!</Text>
                         <TouchableOpacity
@@ -131,6 +142,7 @@ const Store = ({ navigation }) => {
         </SafeAreaView>
     );
 };
+
 
 
 
@@ -176,11 +188,11 @@ const styles = StyleSheet.create({
         borderRadius: 8,
         alignItems: 'center',
         justifyContent: 'space-between',
-        width: 175,
+        width: "46%",
         height: 350,
     },
     brochureImage: {
-        width: 140,
+        width: "100%",
         height: 200,
         marginBottom: 8,
         borderRadius: 10,
