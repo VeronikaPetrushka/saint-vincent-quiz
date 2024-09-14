@@ -1,3 +1,5 @@
+// purchase status update when item is bought directly in store
+
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, SafeAreaView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -128,6 +130,8 @@ const Store = ({ navigation }) => {
         </SafeAreaView>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     wrapper: {

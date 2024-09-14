@@ -107,7 +107,7 @@ const Album = () => {
                                 key={index}
                                 style={[
                                     styles.dot,
-                                    { backgroundColor: currentPage === index ? '#618e4d' : '#ccc' }
+                                    { backgroundColor: currentPage === index ? '#618e4d' : '#fff' }
                                 ]}
                             />
                         ))}

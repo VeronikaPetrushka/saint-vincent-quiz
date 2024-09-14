@@ -14,7 +14,7 @@ const QuizGenius = () => {
     const [score, setScore] = useState(0);
     const [hintModalVisible, setHintModalVisible] = useState(false);
     const [hintApplied, setHintApplied] = useState(false);
-    const [timeLeft, setTimeLeft] = useState(20);
+    const [timeLeft, setTimeLeft] = useState(120);
     const [correctAnswersInRow, setCorrectAnswersInRow] = useState(0);
     const [quizFinished, setQuizFinished] = useState(false);
     const [totalBalance, setTotalBalance] = useState(0);
@@ -149,7 +149,7 @@ const QuizGenius = () => {
         setSelectedOptionIndex(null);
         setScore(0);
         setHintApplied(false);
-        setTimeLeft(20);
+        setTimeLeft(120);
         setCorrectAnswersInRow(0);
         setQuizFinished(false);
         setShuffledQuestions(shuffleArray(quiz.flatMap(topic => {

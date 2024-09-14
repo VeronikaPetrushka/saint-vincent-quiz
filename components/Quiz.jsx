@@ -1,6 +1,3 @@
-// highlight correct in green, even when wrong selected
-// Total balance - inconsistent update +- 100
-
 import React, { useState, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, FlatList, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
