@@ -7,6 +7,7 @@ const Album = () => {
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
     const [selectedBrochure, setSelectedBrochure] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
+    const [isQuizVisited, setIsQuizVisited] = useState(false);
     const navigation = useNavigation();
 
     const loadPurchasedBrochures = useCallback(async () => {
@@ -16,11 +17,9 @@ const Album = () => {
 
             if (storedBrochures) {
                 const brochures = JSON.parse(storedBrochures);
-
                 const purchasedBrochuresList = brochures
                     .flatMap(topic => topic.cards)
                     .filter(card => card.purchased); 
-
                 setPurchasedBrochures(purchasedBrochuresList);
             } else {
                 console.log('No purchased brochures found.');
@@ -31,14 +30,28 @@ const Album = () => {
         }
     }, []);
 
+    const checkQuizVisited = useCallback(async () => {
+        try {
+            const visited = await AsyncStorage.getItem('quizVisited');
+            if (visited === 'true') {
+                setIsQuizVisited(true);
+            }
+        } catch (error) {
+            console.error("Failed to check if quiz was visited:", error);
+        }
+    }, []);
+
     useFocusEffect(
         useCallback(() => {
             loadPurchasedBrochures(); 
-        }, [loadPurchasedBrochures])
+            checkQuizVisited();
+        }, [loadPurchasedBrochures, checkQuizVisited])
     );
 
     const handleNavigateToStore = () => {
-        navigation.navigate('StoreScreen');
+        if (isQuizVisited) {
+            navigation.navigate('StoreScreen');
+        }
     };
 
     const handleBrochurePress = (item) => {
@@ -83,8 +96,9 @@ const Album = () => {
                 <View style={{ width: '100%' }}>
                     <Text style={styles.emptyText}>No purchased brochures yet.</Text>
                     <TouchableOpacity
-                        style={styles.storeButton}
+                        style={[styles.storeButton, !isQuizVisited && styles.disabledButton]}
                         onPress={handleNavigateToStore}
+                        disabled={!isQuizVisited}
                     >
                         <Text style={styles.storeButtonText}>Go to Store</Text>
                     </TouchableOpacity>
@@ -172,6 +186,9 @@ const styles = StyleSheet.create({
     storeButtonText: {
         color: '#fff',
         fontSize: 16,
+    },
+    disabledButton: {
+        opacity: 0.5,
     },
     brochuresContainer: {
         justifyContent: 'center',

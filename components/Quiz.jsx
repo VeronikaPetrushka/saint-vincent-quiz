@@ -495,7 +495,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: 170,
-        height: 320,
+        height: 330,
         margin: 5
     },
     brochureImage: {

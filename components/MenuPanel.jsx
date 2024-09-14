@@ -1,16 +1,34 @@
+import React, { useState } from 'react';
 import { SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
-import { useNavigation, useRoute } from '@react-navigation/native';
+import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from "./Icons";
 
 const MenuPanel = () => {
     const navigation = useNavigation();
     const route = useRoute();
+    const [isQuizVisited, setIsQuizVisited] = useState(false);
 
     const home = 'home';
     const settings = 'settings';
     const shop = 'shop';
     const gallery = 'gallery';
     const results = 'results';
+
+    useFocusEffect(
+        React.useCallback(() => {
+            const checkQuizVisited = async () => {
+                try {
+                    const visited = await AsyncStorage.getItem('quizVisited');
+                    setIsQuizVisited(!!visited); 
+                } catch (error) {
+                    console.error('Failed to retrieve quizVisited:', error);
+                }
+            };
+
+            checkQuizVisited();
+        }, [])
+    );
 
     const handleNavigateToHome = () => {
         navigation.navigate('MainMenuScreen');
@@ -21,7 +39,9 @@ const MenuPanel = () => {
     };
 
     const handleNavigateToStore = () => {
-        navigation.navigate('StoreScreen');
+        if (isQuizVisited) {
+            navigation.navigate('StoreScreen');
+        }
     };
 
     const handleNavigateToResults = () => {
@@ -36,19 +56,35 @@ const MenuPanel = () => {
 
     return (
         <SafeAreaView style={styles.container}>
-            <TouchableOpacity onPress={handleNavigateToStore} style={[styles.button, isCurrent('StoreScreen') && styles.activeButton]}>
+            <TouchableOpacity 
+                onPress={handleNavigateToStore} 
+                disabled={!isQuizVisited} 
+                style={[styles.button, isCurrent('StoreScreen') && styles.activeButton, !isQuizVisited && styles.disabledButton]}
+            >
                 <Icons type={shop} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToGallery} style={[styles.button, isCurrent('AlbumScreen') && styles.activeButton]}>
+            <TouchableOpacity 
+                onPress={handleNavigateToGallery} 
+                style={[styles.button, isCurrent('AlbumScreen') && styles.activeButton]}
+            >
                 <Icons type={gallery} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToHome} style={[styles.button, isCurrent('MainMenuScreen') && styles.activeButton]}>
+            <TouchableOpacity 
+                onPress={handleNavigateToHome} 
+                style={[styles.button, isCurrent('MainMenuScreen') && styles.activeButton]}
+            >
                 <Icons type={home} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToResults} style={[styles.button, isCurrent('ResultsScreen') && styles.activeButton]}>
+            <TouchableOpacity 
+                onPress={handleNavigateToResults} 
+                style={[styles.button, isCurrent('ResultsScreen') && styles.activeButton]}
+            >
                 <Icons type={results} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToSettings} style={[styles.button, isCurrent('SettingsScreen') && styles.activeButton]}>
+            <TouchableOpacity 
+                onPress={handleNavigateToSettings} 
+                style={[styles.button, isCurrent('SettingsScreen') && styles.activeButton]}
+            >
                 <Icons type={settings} />
             </TouchableOpacity>
         </SafeAreaView>
@@ -74,6 +110,9 @@ const styles = StyleSheet.create({
     },
     activeButton: {
         backgroundColor: '#c7d3b8',
+    },
+    disabledButton: {
+        backgroundColor: '#d3d3d3',
     },
 });
 

@@ -102,7 +102,7 @@ const Store = ({ navigation }) => {
                     <Text style={styles.balanceText}>{totalBalance}</Text>
                 </View>
 
-                {brochuresData.length === 0 ? (
+                {!brochuresData ? (
                     <View style={styles.emptyContainer}>
                         <Text style={styles.emptyMessage}>Try the quiz and come back to shop!</Text>
                         <TouchableOpacity
