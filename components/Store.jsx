@@ -85,8 +85,9 @@ const Store = ({ navigation }) => {
                     onPress={() => handlePurchase(item)}
                     disabled={totalBalance < item.price || purchased}
                 >
+                    {!purchased ? <Icons type={balanceIcon}/> : ''}
                     <Text style={styles.purchaseButtonText}>
-                        {purchased ? 'Purchased' : `$ ${item.price}`}
+                        {purchased ? 'Purchased' : `  ${item.price}`}
                     </Text>
                 </TouchableOpacity>
             </View>
@@ -189,13 +190,15 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     purchaseButton: {
-        backgroundColor: '#007BFF',
+        backgroundColor: '#618e4d',
         padding: 8,
         borderRadius: 8,
         marginTop: 8,
         width: '100%',
         justifyContent: 'center',
         alignItems: 'center',
+        flexDirection: 'row',
+        height: 40
     },
     disabledButton: {
         backgroundColor: '#ccc',

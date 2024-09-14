@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Modal, Animated, Easing, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons';
@@ -12,6 +12,16 @@ const Gift = ({ isVisible, onClose }) => {
     const gift = 'gift';
 
     const gifts = [200, 500, 1000, 2000, 5000];
+
+    useEffect(() => {
+        const listenerId = shakeAnimation.addListener(({ value }) => {
+            console.log("Shake animation value:", value);
+        });
+
+        return () => {
+            shakeAnimation.removeListener(listenerId);
+        };
+    }, [shakeAnimation]);
 
     const startShakeAnimation = () => {
         Animated.sequence([

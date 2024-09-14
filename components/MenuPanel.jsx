@@ -1,9 +1,10 @@
-import { SafeAreaView, TouchableOpacity } from "react-native"
-import { useNavigation } from '@react-navigation/native';
+import { SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
+import { useNavigation, useRoute } from '@react-navigation/native';
 import Icons from "./Icons";
 
 const MenuPanel = () => {
     const navigation = useNavigation();
+    const route = useRoute();
 
     const home = 'home';
     const settings = 'settings';
@@ -16,13 +17,13 @@ const MenuPanel = () => {
     };
 
     const handleNavigateToGallery = () => {
-            navigation.navigate('AlbumScreen');
-        };
+        navigation.navigate('AlbumScreen');
+    };
 
     const handleNavigateToStore = () => {
         navigation.navigate('StoreScreen');
     };
-    
+
     const handleNavigateToResults = () => {
         navigation.navigate('ResultsScreen');
     };
@@ -31,29 +32,30 @@ const MenuPanel = () => {
         navigation.navigate('SettingsScreen');
     };
 
+    const isCurrent = (screen) => route.name === screen;
+
     return (
         <SafeAreaView style={styles.container}>
-            <TouchableOpacity onPress={handleNavigateToStore}>
-                <Icons type={shop}/>
+            <TouchableOpacity onPress={handleNavigateToStore} style={[styles.button, isCurrent('StoreScreen') && styles.activeButton]}>
+                <Icons type={shop} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToGallery}>
-                <Icons type={gallery}/>
+            <TouchableOpacity onPress={handleNavigateToGallery} style={[styles.button, isCurrent('AlbumScreen') && styles.activeButton]}>
+                <Icons type={gallery} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToHome}>
-                <Icons type={home}/>
+            <TouchableOpacity onPress={handleNavigateToHome} style={[styles.button, isCurrent('MainMenuScreen') && styles.activeButton]}>
+                <Icons type={home} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToResults}>
-                <Icons type={results}/>
+            <TouchableOpacity onPress={handleNavigateToResults} style={[styles.button, isCurrent('ResultsScreen') && styles.activeButton]}>
+                <Icons type={results} />
             </TouchableOpacity>
-            <TouchableOpacity onPress={handleNavigateToSettings}>
-                <Icons type={settings}/>
+            <TouchableOpacity onPress={handleNavigateToSettings} style={[styles.button, isCurrent('SettingsScreen') && styles.activeButton]}>
+                <Icons type={settings} />
             </TouchableOpacity>
         </SafeAreaView>
-    )
+    );
 };
 
-const styles = {
-
+const styles = StyleSheet.create({
     container: {
         width: "90%",
         height: 75,
@@ -64,8 +66,15 @@ const styles = {
         flexDirection: 'row',
         backgroundColor: '#fff',
         alignSelf: "center",
-        borderRadius: 50
+        borderRadius: 50,
     },
-}
+    button: {
+        padding: 15,
+        borderRadius: 30,
+    },
+    activeButton: {
+        backgroundColor: '#c7d3b8',
+    },
+});
 
 export default MenuPanel;
