@@ -28,47 +28,47 @@ const App = () => {
         <Stack.Screen 
           name="NewGameScreen" 
           component={NewGameScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="DailyQuizScreen" 
           component={DailyQuizScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="QuizScreen" 
           component={QuizScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="QuizGeniusScreen" 
           component={QuizGeniusScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="QuizExpertScreen" 
           component={QuizExpertScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="AlbumScreen" 
           component={AlbumScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="StoreScreen" 
           component={StoreScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="ResultsScreen" 
           component={ResultsScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
         <Stack.Screen 
           name="SettingsScreen" 
           component={SettingsScreen} 
-          // options={{ headerShown: false }} 
+          options={{ headerShown: false }} 
         />
       </Stack.Navigator>
     </NavigationContainer>

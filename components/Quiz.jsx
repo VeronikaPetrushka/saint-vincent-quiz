@@ -204,8 +204,8 @@ const Quiz = ({ topic, topicIndex }) => {
                 <View style={styles.container}>
                     <Text style={styles.topicName}>Quiz Finished</Text>
                     <Text style={styles.topicName}>{topic.topic}</Text>
-                    <Text style={styles.scoreText}>Final Score: {score}</Text>
-                    <Text style={styles.scoreText}> <Icons type={balance}/> {totalBalance}</Text>
+                    <Text style={styles.scoreFinalText}>Final Score: {score}</Text>
+                    <Text style={styles.scoreFinalText}> <Icons type={balance}/> {totalBalance}</Text>
 
                     <TouchableOpacity style={styles.finishBtn} onPress={() => navigation.navigate('NewGameScreen')}>
                         <Text style={styles.finishText}>Go back</Text>
@@ -258,8 +258,10 @@ const Quiz = ({ topic, topicIndex }) => {
                         <View style={styles.modalContainer}>
                             <View style={styles.modalContent}>
                                 <Text style={styles.modalText}>Congratulations, you’ve unlocked the next level!</Text>
+                                <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%'}}>
                                 <Button title="Close" onPress={() => setNextLevelModalVisible(false)} />
                                 <Button title="Proceed" onPress={handleProceedToNextTopic} />
+                                </View>
                             </View>
                         </View>
                     </Modal>
@@ -332,8 +334,10 @@ return (
                     <View style={styles.modalContainer}>
                         <View style={styles.modalContent}>
                             <Text style={styles.modalText}>Buy a hint for 50 points?</Text>
+                            <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '100%'}}>
                             <Button title="Yes" onPress={() => handleHintPurchase(true)} />
                             <Button title="No" onPress={() => handleHintPurchase(false)} />
+                            </View>
                         </View>
                     </View>
                 </Modal>
@@ -375,7 +379,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: 'white',
-        marginBottom: 20,
+    },
+    scoreFinalText: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: 'white',
+        marginBottom: 20
     },
     questionContainer: {
         marginBottom: 20,
@@ -415,7 +424,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 15,
-        backgroundColor: '#007bff',
+        backgroundColor: '#618e4d',
         marginTop: 10,
         alignItems: 'center',
         justifyContent: 'center',
@@ -489,12 +498,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: 170,
-        height: 300,
+        height: 320,
         margin: 5
     },
     brochureImage: {
         width: 140,
-        height: 150,
+        height: 200,
         borderRadius: 10,
         marginBottom: 10,
         overflow: 'hidden'
@@ -523,7 +532,7 @@ const styles = StyleSheet.create({
         borderColor: 'white',
         borderWidth: 1,
         borderRadius: 10,
-        backgroundColor: "#007bff",
+        backgroundColor: '#618e4d',
         alignItems: 'center',
         justifyContent: 'center',
         marginBottom: 20,

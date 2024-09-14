@@ -1,17 +1,37 @@
 import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { useQuiz } from '../context/context.js';
 
 const Settings = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const { setEnabledTopics } = useQuiz();
 
     const handleResetProgress = async () => {
         try {
             await AsyncStorage.removeItem('totalBalance');
-            setIsModalVisible(false); // Hide the modal
-            Alert.alert('Success', 'Progress has been reset.');
+
+            const storedBrochures = await AsyncStorage.getItem('brochures');
+            if (storedBrochures) {
+                const brochures = JSON.parse(storedBrochures);
+
+                const updatedBrochures = brochures.map(topic => ({
+                    ...topic,
+                    cards: topic.cards.map(card => ({
+                        ...card,
+                        purchased: false
+                    }))
+                }));
+
+                await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochures));
+            }
+
+            setEnabledTopics([true, false, false, false, false, false]);
+
+            setIsModalVisible(false);
+            Alert.alert('Success', 'Progress and purchases have been reset.');
         } catch (error) {
-            console.error('Failed to reset progress:', error);
+            console.error('Failed to reset progress and purchases:', error);
             Alert.alert('Error', 'Failed to reset progress.');
         }
     };
@@ -35,7 +55,7 @@ const Settings = () => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Are you sure?</Text>
-                        <Text style={styles.modalMessage}>Do you really want to reset your progress? This action cannot be undone.</Text>
+                        <Text style={styles.modalMessage}>Do you really want to reset your progress and purchases? This action cannot be undone.</Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
                                 style={[styles.modalButton, styles.yesButton]}

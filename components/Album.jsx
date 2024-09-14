@@ -124,7 +124,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
         height: "110%",
         width: '100%',
-        backgroundColor: '#91b585',
+        backgroundColor: '#c7d3b8',
         paddingBottom: 170
     },
     title: {
@@ -142,7 +142,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 15,
         alignItems: 'center',
-        justifyContent: 'center', // Center content vertically
+        justifyContent: 'center',
         width: 370,
         height: 550
     },
@@ -160,12 +160,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         textAlign: 'center',
         marginTop: 50,
+        color: '#333333'
     },
     storeButton: {
         marginTop: 20,
         padding: 12,
-        backgroundColor: '#007BFF',
-        borderRadius: 8,
+        backgroundColor: '#618e4d',
+        borderRadius: 15,
         alignItems: 'center',
     },
     storeButtonText: {

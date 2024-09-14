@@ -4,7 +4,7 @@ const brochures = [
         cards: [
             {
                 name: "Val d'Ayas",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/valley-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -14,7 +14,7 @@ const brochures = [
             },
             {
                 name: "Valtournenche",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/valley-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -24,7 +24,7 @@ const brochures = [
             },
             {
                 name: "Val di Susa",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/valley-3.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -34,7 +34,7 @@ const brochures = [
             },
             {
                 name: "Val d'Aymon",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/valley-4.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -49,7 +49,7 @@ const brochures = [
         cards: [
             {
                 name: "Church of Saint Vincent",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/history-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -59,7 +59,7 @@ const brochures = [
             },
             {
                 name: "Castle of Chantillon",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/history-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -69,7 +69,7 @@ const brochures = [
             },
             {
                 name: "Mineral Museum",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/history-3.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -79,7 +79,7 @@ const brochures = [
             },
             {
                 name: "Roman Bridge",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/history-4.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -89,7 +89,7 @@ const brochures = [
             },
             {
                 name: "Valdostan Museum",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/history-5.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -104,7 +104,7 @@ const brochures = [
         cards: [
             {
                 name: "Saint-Vincent Thermal Bath",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/attractions-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -114,7 +114,7 @@ const brochures = [
             },
             {
                 name: "Saint-Vincent Botanical Garden",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/attractions-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -130,7 +130,7 @@ const brochures = [
         cards: [
             {
                 name: "Matterhorn Mountain",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/nature-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -140,7 +140,7 @@ const brochures = [
             },
             {
                 name: "Lod Lake",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/nature-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -150,7 +150,7 @@ const brochures = [
             },
             {
                 name: "Champoluc Forest",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/nature-3.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -160,7 +160,7 @@ const brochures = [
             },
             {
                 name: "Colle San Carlo Pass",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/nature-4.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -170,7 +170,7 @@ const brochures = [
             },
             {
                 name: "Balma Glacier",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/nature-5.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -185,7 +185,7 @@ const brochures = [
         cards: [
             {
                 name: "Le Petit Bijou Restaurant",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/restaurants-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -195,7 +195,7 @@ const brochures = [
             },
             {
                 name: "Al Vecchio Forno Trattoria",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/restaurants-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -205,7 +205,7 @@ const brochures = [
             },
             {
                 name: "Maison Anselmet Winery",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/restaurants-3.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -215,7 +215,7 @@ const brochures = [
             },
             {
                 name: "Cafe La Grolla",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/restaurants-4.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -225,7 +225,7 @@ const brochures = [
             },
             {
                 name: "Restaurant La Chatelaine",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/restaurants-5.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -240,7 +240,7 @@ const brochures = [
         cards: [
             {
                 name: "Grand Hotel Billia",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/hotels-1.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -250,7 +250,7 @@ const brochures = [
             },
             {
                 name: "Hotel Parc et Lac",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/hotels-2.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -260,7 +260,7 @@ const brochures = [
             },
             {
                 name: "Best western Plus Hotel Alla Posta",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/hotels-3.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -270,7 +270,7 @@ const brochures = [
             },
             {
                 name: "Hotel Les Saisons",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/hotels-4.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {
@@ -280,7 +280,7 @@ const brochures = [
             },
             {
                 name: "Hotel Relais du Foyer",
-                image: require('../assets/background/saint-vincent.jpg'),
+                image: require('../assets/brochures/hotels-5.jpg'),
                 price: 1000,
                 purchased: false,
                 fact: {

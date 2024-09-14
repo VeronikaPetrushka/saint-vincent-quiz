@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons';
 
-const Store = () => {
+const Store = ({ navigation }) => {
     const [totalBalance, setTotalBalance] = useState(0);
     const [brochuresData, setBrochuresData] = useState([]);
     const balanceIcon = 'balance';
@@ -99,25 +99,35 @@ const Store = () => {
                     <Text style={styles.balanceText}>{totalBalance}</Text>
                 </View>
 
-                {brochuresData.map((topic, index) => (
-                    <View key={index} style={{ marginBottom: 50 }}>
-                        <Text style={styles.topicTitle}>{topic.topic}</Text>
-                        <FlatList
-                            data={topic.cards}
-                            renderItem={({ item }) => renderBrochureItem({ item, topic: topic.topic })}
-                            keyExtractor={item => item.name}
-                            numColumns={2}
-                            scrollEnabled={false}
-                            style={styles.list}
-                        />
+                {brochuresData.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyMessage}>Try the quiz and come back to shop!</Text>
+                        <TouchableOpacity
+                            style={styles.goBackButton}
+                            onPress={() => navigation.navigate('NewGameScreen')}
+                        >
+                            <Text style={styles.goBackButtonText}>Go to Quiz</Text>
+                        </TouchableOpacity>
                     </View>
-                ))}
+                ) : (
+                    brochuresData.map((topic, index) => (
+                        <View key={index} style={{ marginBottom: 50 }}>
+                            <Text style={styles.topicTitle}>{topic.topic}</Text>
+                            <FlatList
+                                data={topic.cards}
+                                renderItem={({ item }) => renderBrochureItem({ item, topic: topic.topic })}
+                                keyExtractor={item => item.name}
+                                numColumns={2}
+                                scrollEnabled={false}
+                                style={styles.list}
+                            />
+                        </View>
+                    ))
+                )}
             </ScrollView>
         </SafeAreaView>
     );
 };
-
-
 
 const styles = StyleSheet.create({
     wrapper: {
@@ -128,7 +138,7 @@ const styles = StyleSheet.create({
         padding: 16,
         backgroundColor: '#fff',
         height: '100%',
-        backgroundColor: '#91b585',
+        backgroundColor: '#c7d3b8',
     },
     balanceContainer: {
         flexDirection: 'row',
@@ -162,11 +172,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: 175,
-        height: 300,
+        height: 350,
     },
     brochureImage: {
-        width: 130,
-        height: 150,
+        width: 140,
+        height: 200,
         marginBottom: 8,
         borderRadius: 10,
     },
@@ -189,7 +199,27 @@ const styles = StyleSheet.create({
     purchaseButtonText: {
         color: '#fff',
         fontSize: 16,
-    }
+    },
+    emptyContainer: {
+        alignItems: 'center',
+        marginTop: 50,
+    },
+    emptyMessage: {
+        fontSize: 18,
+        fontWeight: 'bold',
+        color: '#333',
+        marginBottom: 20,
+    },
+    goBackButton: {
+        backgroundColor: '#007BFF',
+        padding: 12,
+        borderRadius: 8,
+    },
+    goBackButtonText: {
+        color: '#fff',
+        fontSize: 16,
+        textAlign: 'center',
+    },
 });
 
 export default Store;

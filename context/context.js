@@ -1,5 +1,3 @@
-// Total balance
-
 import React, { createContext, useContext, useState } from 'react';
 
 const QuizContext = createContext();
@@ -14,7 +12,7 @@ export const QuizProvider = ({ children }) => {
     };
 
     return (
-        <QuizContext.Provider value={{ enabledTopics, unlockNextTopic }}>
+        <QuizContext.Provider value={{ enabledTopics, setEnabledTopics, unlockNextTopic }}>
             {children}
         </QuizContext.Provider>
     );

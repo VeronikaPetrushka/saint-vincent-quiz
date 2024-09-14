@@ -241,7 +241,7 @@ const QuizExpert = () => {
                         <Text style={styles.balanceText}>{totalBalance}</Text>
                         </View>
                         </View>
-                        <Text style={styles.statsText}>Found Words:</Text>
+                        <Text style={styles.foundText}>Found Words:</Text>
                         {Array.from(foundWords).map((word, index) => (
                             <Text key={index} style={styles.foundWord}>{word}</Text>
                         ))}
@@ -258,6 +258,7 @@ const styles = StyleSheet.create({
         justifyContent: 'start',
         alignItems: 'center',
         padding: 10,
+        paddingVertical: 70,
         marginTop: 20,
         height: "105%",
         width: "100%",
@@ -312,8 +313,13 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
+    foundText: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        marginBottom: 10
+    },
     foundWord: {
-        fontSize: 16,
+        fontSize: 18,
         color: 'green',
     },
     timerText: {
@@ -332,7 +338,8 @@ const styles = StyleSheet.create({
         color: '#333333',
         marginBottom: 200,
         marginTop: 50,
-        width: '100%'
+        width: '100%',
+        marginLeft: 50
     },
     button: {
         backgroundColor: '#618e4d',
@@ -355,7 +362,8 @@ const styles = StyleSheet.create({
     },
     balanceText: {
         fontSize: 18,
-        marginLeft: 10
+        marginLeft: 10,
+        fontWeight: 'bold',
     },
     statsInnerContainer: {
         flexDirection: 'row',

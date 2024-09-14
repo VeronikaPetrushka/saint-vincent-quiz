@@ -17,7 +17,7 @@ const DailyQuiz = () => {
     const intervalRef = useRef(null);
     const balance = 'balance';
 
-    const QUIZ_INTERVAL = 120000;
+    const QUIZ_INTERVAL = 24 * 60 * 60 * 1000;
 
     useEffect(() => {
         checkQuizAvailability();
@@ -73,9 +73,10 @@ const DailyQuiz = () => {
     };
 
     const formatTime = (seconds) => {
-        const minutes = Math.floor(seconds / 60);
+        const hours = Math.floor(seconds / 3600);
+        const minutes = Math.floor((seconds % 3600) / 60);
         const remainingSeconds = seconds % 60;
-        return `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+        return `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
     };
 
     const handleOptionPress = (selectedAnswer) => {
@@ -113,7 +114,7 @@ const DailyQuiz = () => {
         >
             <View style={styles.overlay}>        
             <View style={styles.container}>
-                <Text style={styles.scoreText}>
+                <Text style={styles.final}>
                     Next daily quiz will be available in {formatTime(countdown)}.
                 </Text>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
@@ -136,9 +137,12 @@ const DailyQuiz = () => {
             <View style={styles.overlay}>
         
             <View style={styles.container}>
-                <Text style={styles.scoreTextFinal}>You have completed all your daily tasks for today. See you tomorrow!</Text>
-                <Text style={styles.scoreTextFinal}>Final Score: {score}</Text>
-                <Text style={styles.scoreTextFinal}>Balance: {totalBalance}</Text>
+                <Text style={styles.final}>You have completed all your daily tasks for today. See you tomorrow!</Text>
+                <Text style={styles.final}>Final Score: {score}</Text>
+                <View style={styles.balanceContainer}>
+                <Icons type={balance}/>
+                <Text style={styles.scoreText}>{totalBalance}</Text>
+                </View>
                 <TouchableOpacity onPress={() => navigation.goBack()} style={styles.goBackButton}>
                     <Text style={styles.goBackText}>Go Back</Text>
                 </TouchableOpacity>
@@ -162,7 +166,10 @@ const DailyQuiz = () => {
 
         <View style={styles.container}>
             <Text style={styles.questionText}>{currentQuestion.statement}</Text>
-            <Text style={styles.scoreText}><Icons type={balance}/>  {score}</Text>
+            <View style={styles.balanceContainer}>
+            <Icons type={balance}/>
+            <Text style={styles.scoreText}>{score}</Text>
+            </View>
             <TouchableOpacity
                 style={[
                     styles.optionButton,
@@ -190,9 +197,6 @@ const DailyQuiz = () => {
     );
 };
 
-
-
-
 const styles = StyleSheet.create({
     container: {
         justifyContent: 'center',
@@ -218,12 +222,16 @@ const styles = StyleSheet.create({
         marginBottom: 20,
         color: 'white',
         marginBottom: 100,
-        marginTop: -200
+        marginTop: -200,
+        height: 80,
+        fontWeight: 600,
+        textAlign: 'center'
     },
     scoreText: {
         fontSize: 22,
-        marginBottom: 300,
-        color: 'white'
+        color: 'black',
+        marginLeft: 10,
+        fontWeight: 'bold'
     },
     optionButton: {
         padding: 15,
@@ -248,20 +256,63 @@ const styles = StyleSheet.create({
     },
     goBackButton: {
         marginTop: 20,
-        padding: 10,
-        backgroundColor: '#007BFF',
-        borderRadius: 5,
+        padding: 15,
+        backgroundColor: '#618e4d',
+        borderRadius: 15,
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center'
     },
     goBackText: {
         color: '#FFF',
-        fontSize: 16,
+        fontSize: 18,
         color: 'white'
     },
     scoreTextFinal: {
         marginBottom: 50,
+        fontSize: 22,
+        color: 'black',
+        marginLeft: 10,
+        fontWeight: 'bold'
+    },
+    final: {
+        fontSize: 22,
+        marginBottom: 20,
         color: 'white',
+        marginBottom: 100,
+        marginTop: -100,
+        height: 80,
+        fontWeight: 600,
+        textAlign: 'center'
+    },
+    balanceContainer: {
+        flexDirection: 'row',
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginBottom: 100,
+        borderRadius: 10,
+        backgroundColor: 'white',
+        width: 120,
+        height: 40
+    },
+    purchasedText: {
+        color: '#FFF',
+        fontWeight: 'bold',
         fontSize: 18,
-    }
+        marginBottom: 10,
+    },
+    goBackText: {
+        color: '#FFF',
+        fontSize: 18,
+        color: 'white'
+    },
+    priceButton: {
+        backgroundColor: '#007AFF',
+        padding: 10,
+        borderRadius: 5,
+        marginBottom: 10,
+        alignItems: 'center',
+    },
 });
 
 export default DailyQuiz;
