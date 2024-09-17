@@ -2,6 +2,7 @@ import React, { useState, useCallback } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
+import Icons from './Icons';
 
 const Album = () => {
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
@@ -9,6 +10,8 @@ const Album = () => {
     const [currentPage, setCurrentPage] = useState(0);
     const [isQuizVisited, setIsQuizVisited] = useState(false);
     const navigation = useNavigation();
+
+    const plus = 'plus'
 
     const loadPurchasedBrochures = useCallback(async () => {
         try {
@@ -128,6 +131,9 @@ const Album = () => {
                             />
                         ))}
                     </View>
+                    {/* <TouchableOpacity style={styles.addBtn}>
+                        <Icons type={plus}/>
+                    </TouchableOpacity> */}
                 </View>
             )}
         </View>
@@ -224,6 +230,12 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#555',
         textAlign: 'center'
+    },
+    addBtn: {
+        width: '100%',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 15
     }
 });
 

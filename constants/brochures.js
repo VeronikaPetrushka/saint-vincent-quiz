@@ -289,7 +289,93 @@ const brochures = [
                 }
             },
         ]
+    },
+    {
+        topic: "Local Festivals and Traditions",
+        cards: [
+            {
+                name: "Feast of Saint Vincent",
+                image: require('../assets/brochures/festival-1.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Feast of Saint Vincent",
+                    description: "The Feast of Saint Vincent is a vibrant celebration held every year in the town of Saint Vincent. This festival honors the town's patron saint with a mix of religious ceremonies, traditional music, dancing, and parades. Locals and visitors alike participate in the festivities, enjoying delicious regional dishes and celebrating the rich cultural heritage of the area."
+                }
+            },
+            {
+                name: "Chestnut Festival",
+                image: require('../assets/brochures/festival-2.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Chestnut Festival",
+                    description: "The Chestnut Festival is one of the most beloved autumn traditions in Saint Vincent. Celebrated in late October, the festival revolves around the chestnut harvest, offering a variety of chestnut-based dishes and drinks. The festival also features folk music, traditional games, and craft fairs, providing a fun and festive atmosphere for all ages."
+                }
+            },
+            {
+                name: "Battle of the Queens",
+                image: require('../assets/brochures/festival-3.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Battle of the Queens",
+                    description: "The Battle of the Queens (Bataille des Reines) is a centuries-old tradition in the Aosta Valley, including Saint Vincent. This unique event is a contest between cows to determine the 'Queen' of the herd. The cows gently lock horns in a display of strength and dominance. The event draws large crowds and is an exciting way to experience local rural traditions."
+                }
+            },
+            {
+                name: "Carnival of Verrès",
+                image: require('../assets/brochures/festival-4.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Carnival of Verrès",
+                    description: "The Carnival of Verrès is one of the most famous historical festivals in the region. Every year, the town of Verrès hosts a reenactment of a 15th-century historical event, with participants dressed in medieval costumes. The festival includes parades, performances, and a grand banquet, immersing visitors in the atmosphere of the Middle Ages while celebrating local history and tradition."
+                }
+            }
+        ]
+    },    
+    {
+        topic: "Historical Sites",
+        cards: [
+            {
+                name: "Roman Bridge of Châtillon",
+                image: require('../assets/brochures/hist-sites-1.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Roman Bridge of Châtillon",
+                    description: "The Roman Bridge of Châtillon is a testament to the Roman Empire's architectural prowess. Built in the 1st century AD, this stone bridge spans the Marmore River and is one of the most important ancient structures in the region. Visitors can walk across the bridge and admire its historical significance, as well as the surrounding scenic views of the river and valley."
+                }
+            },
+        ]
+    },    
+    {
+        topic: "Flora and Fauna",
+        cards: [
+            {
+                name: "Alpine Meadows",
+                image: require('../assets/brochures/flora-fauna-1.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Alpine Meadows",
+                    description: "The Alpine Meadows of Saint-Vincent are renowned for their vibrant wildflowers and lush grasses. These meadows come alive in the spring, blanketed in colorful flowers such as gentians, edelweiss, and primroses. The meadows provide an ideal habitat for a variety of wildlife, including marmots and chamois, making it a popular spot for nature lovers and photographers."
+                }
+            },
+            {
+                name: "Larch Forests",
+                image: require('../assets/brochures/flora-fauna-2.jpg'),
+                price: 1000,
+                purchased: false,
+                fact: {
+                    factName: "Larch Forests",
+                    description: "The Larch Forests of Saint-Vincent offer a unique natural experience, particularly during the fall when the trees turn golden. These forests are home to numerous species of birds, mammals, and insects, creating a rich ecosystem that is essential to the region's biodiversity. Visitors can hike through the forests and enjoy the serene environment while learning about the local flora and fauna."
+                }
+            }
+        ]
     }
+    
 ];
 
 

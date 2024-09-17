@@ -4,6 +4,7 @@ import { Image, StyleSheet } from 'react-native';
 const Icons = ({ type }) => {
 
   let imageSource;
+  let iconStyle = styles.icon;
 
   switch (type) {
     case 'home':
@@ -27,12 +28,16 @@ const Icons = ({ type }) => {
     case 'gift':
       imageSource = require('../assets/quiz/gift.png');
       break;
+    case 'plus':
+      imageSource = require('../assets/quiz/plus.png');
+      iconStyle = styles.plusIcon;
+      break;
   }
 
   return (
     <Image 
       source={imageSource} 
-      style={styles.icon} 
+      style={iconStyle} 
     />
   );
 };
@@ -41,6 +46,10 @@ const styles = StyleSheet.create({
   icon: {
     width: 28,
     height: 28,
+  },
+  plusIcon: {
+    width: 55,
+    height: 55,
   },
 });
 

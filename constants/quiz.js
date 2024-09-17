@@ -634,7 +634,320 @@ const quiz = [
                 answer: "Hotel Les Saisons"
             }
         ]
-    }
+    },
+    {
+        topic: "Local Festivals and Traditions",
+        image: require('../assets/background/festivals.jpg'),
+        questions: [
+            {
+                question: "What is the most famous festival celebrated in Saint-Vincent?",
+                options: ["Fête des Vignerons", "Feu de Saint-Vincent", "Festival of Saint Bernard"],
+                answer: "Feu de Saint-Vincent"
+            },
+            {
+                question: "When is the Feu de Saint-Vincent typically celebrated?",
+                options: ["January", "March", "July"],
+                answer: "January"
+            },
+            {
+                question: "Which Saint is the patron of the annual procession in Saint-Vincent?",
+                options: ["Saint Bernard", "Saint Vincent", "Saint Joseph"],
+                answer: "Saint Vincent"
+            },
+            {
+                question: "What traditional activity is performed during the Feu de Saint-Vincent festival?",
+                options: ["Bonfire lighting", "Wine tasting", "Craft market"],
+                answer: "Bonfire lighting"
+            },
+            {
+                question: "What type of music is traditionally played during Saint-Vincent's festivals?",
+                options: ["Folk music", "Jazz", "Classical"],
+                answer: "Folk music"
+            },
+            {
+                question: "Which cultural event showcases local artisans in Saint-Vincent?",
+                options: ["Craft Festival", "Feu de Saint-Vincent", "Saint-Vincent Art Fair"],
+                answer: "Craft Festival"
+            },
+            {
+                question: "In which month does the Carnival of Saint-Vincent take place?",
+                options: ["February", "August", "November"],
+                answer: "February"
+            },
+            {
+                question: "What is the primary purpose of the Saint-Vincent Wine Festival?",
+                options: ["To celebrate local vineyards", "To honor the town’s heritage", "To promote local tourism"],
+                answer: "To celebrate local vineyards"
+            },
+            {
+                question: "What is the name of the traditional dance performed at Saint-Vincent festivals?",
+                options: ["The Quadrille", "La Valdôtaine", "La Tarantella"],
+                answer: "La Valdôtaine"
+            },
+            {
+                question: "Which annual celebration in Saint-Vincent marks the beginning of the harvest season?",
+                options: ["Harvest Festival", "Festival of Grapes", "Autumn Fête"],
+                answer: "Festival of Grapes"
+            },
+            {
+                question: "What food is traditionally prepared during Saint-Vincent’s winter festivals?",
+                options: ["Polenta", "Fondue", "Raclette"],
+                answer: "Raclette"
+            },
+            {
+                question: "Which tradition is associated with New Year's Eve in Saint-Vincent?",
+                options: ["Torchlit skiing", "Fireworks over the mountains", "Parade of lights"],
+                answer: "Torchlit skiing"
+            },
+            {
+                question: "What type of local crafts are displayed during the annual Artisan Market?",
+                options: ["Woodworking", "Pottery", "Textile art"],
+                answer: "Woodworking"
+            },
+            {
+                question: "Which festival in Saint-Vincent is dedicated to the town’s patron saint?",
+                options: ["Saint-Vincent Day", "Saint Bernard Festival", "Feu de Saint-Vincent"],
+                answer: "Feu de Saint-Vincent"
+            },
+            {
+                question: "What unique event happens during the 'Battle of the Queens' festival in Saint-Vincent?",
+                options: ["Cow fighting", "Wine tasting competition", "Sheep racing"],
+                answer: "Cow fighting"
+            },
+            {
+                question: "What traditional garment is worn during the historical parades in Saint-Vincent?",
+                options: ["Traditional Valdostan dress", "Roman tunic", "Renaissance clothing"],
+                answer: "Traditional Valdostan dress"
+            },
+            {
+                question: "Which holiday season brings the largest number of visitors to Saint-Vincent?",
+                options: ["Christmas", "Easter", "Summer solstice"],
+                answer: "Christmas"
+            },
+            {
+                question: "Which festival celebrates local wines and vineyards in Saint-Vincent?",
+                options: ["Fête des Vins", "Harvest Festival", "Festival of Grapes"],
+                answer: "Festival of Grapes"
+            },
+            {
+                question: "What is traditionally given as a blessing during the Feu de Saint-Vincent festival?",
+                options: ["Wine", "Bread", "Candles"],
+                answer: "Wine"
+            }
+        ]
+    },
+    {
+        topic: "Historical Sites",
+        image: require('../assets/background/hist-sites.jpg'),
+        questions: [
+            {
+                question: "What is the name of the famous Roman bridge near Saint-Vincent?",
+                options: ["Pont-Saint-Martin", "Bridge of Sighs", "Pont d’Avignon"],
+                answer: "Pont-Saint-Martin"
+            },
+            {
+                question: "Which medieval castle can be visited near Saint-Vincent?",
+                options: ["Fenestrelle Fort", "Fénis Castle", "Château de Chillon"],
+                answer: "Fénis Castle"
+            },
+            {
+                question: "What was the original purpose of the Roman baths in Saint-Vincent?",
+                options: ["Social gatherings", "Religious rituals", "Medical treatment"],
+                answer: "Medical treatment"
+            },
+            {
+                question: "In which century was Saint-Vincent officially founded?",
+                options: ["2nd Century BC", "5th Century AD", "10th Century AD"],
+                answer: "5th Century AD"
+            },
+            {
+                question: "What ancient road passes through Saint-Vincent?",
+                options: ["Via Francigena", "Appian Way", "Silk Road"],
+                answer: "Via Francigena"
+            },
+            {
+                question: "Which church in Saint-Vincent dates back to the Middle Ages?",
+                options: ["Saint Vincent Church", "Notre Dame Cathedral", "Saint Bernard Church"],
+                answer: "Saint Vincent Church"
+            },
+            {
+                question: "Which famous Roman ruin is located near Saint-Vincent?",
+                options: ["Aosta Amphitheatre", "Roman Forum", "The Parthenon"],
+                answer: "Aosta Amphitheatre"
+            },
+            {
+                question: "What historical building was once a hospital for pilgrims in Saint-Vincent?",
+                options: ["Maison du Saint-Bernard", "Hospice of Saint-Vincent", "Fénis Castle"],
+                answer: "Hospice of Saint-Vincent"
+            },
+            {
+                question: "What historical event is commemorated at Pont-Saint-Martin?",
+                options: ["Roman conquest", "Medieval war victory", "Battle against Saracens"],
+                answer: "Roman conquest"
+            },
+            {
+                question: "Which Roman artifact can still be found in Saint-Vincent?",
+                options: ["An ancient theater", "A stone arch", "A column of Marcus Aurelius"],
+                answer: "A stone arch"
+            },
+            {
+                question: "Which type of architecture dominates the historical sites of Saint-Vincent?",
+                options: ["Romanesque", "Gothic", "Baroque"],
+                answer: "Romanesque"
+            },
+            {
+                question: "Which significant battle took place near Saint-Vincent?",
+                options: ["Battle of Aosta", "Battle of Mont Joux", "Battle of Saint-Martin"],
+                answer: "Battle of Mont Joux"
+            },
+            {
+                question: "What is the name of the Roman archaeological site in Saint-Vincent?",
+                options: ["Augusta Praetoria", "Villa Consolata", "Pons Herculi"],
+                answer: "Villa Consolata"
+            },
+            {
+                question: "Which local museum displays artifacts from Saint-Vincent's Roman past?",
+                options: ["Aosta Museum", "Saint-Vincent Heritage Museum", "Museum of the Alps"],
+                answer: "Saint-Vincent Heritage Museum"
+            },
+            {
+                question: "Which famous pilgrimage route passes through Saint-Vincent?",
+                options: ["The Way of St. James", "Via Francigena", "Camino de Santiago"],
+                answer: "Via Francigena"
+            },
+            {
+                question: "What was the purpose of the ancient Roman aqueducts near Saint-Vincent?",
+                options: ["Irrigation", "Bathing", "Transporting water"],
+                answer: "Transporting water"
+            },
+            {
+                question: "Which medieval festival is held annually at Fénis Castle?",
+                options: ["Medieval Joust", "Festival of the Cross", "Castle Fair"],
+                answer: "Medieval Joust"
+            },
+            {
+                question: "Which historic market is held annually in Saint-Vincent?",
+                options: ["Saint-Vincent Fair", "Aosta Valley Market", "Fiera di Sant'Orso"],
+                answer: "Fiera di Sant'Orso"
+            },
+            {
+                question: "Which castle near Saint-Vincent is renowned for its well-preserved frescoes?",
+                options: ["Fénis Castle", "Issogne Castle", "Château d'Ussé"],
+                answer: "Issogne Castle"
+            },
+            {
+                question: "What ancient structure served as a defense system in medieval Saint-Vincent?",
+                options: ["Watchtowers", "Drawbridges", "City walls"],
+                answer: "Watchtowers"
+            }
+        ]
+    },
+    {
+        topic: "Flora and Fauna",
+        image: require('../assets/background/flora-fauna.jpg'),
+        questions: [
+            {
+                question: "Which animal is commonly spotted in the forests of Saint-Vincent?",
+                options: ["Chamois", "Wolf", "Eagle"],
+                answer: "Chamois"
+            },
+            {
+                question: "What rare bird species can be found in the high-altitude regions of Saint-Vincent?",
+                options: ["Golden Eagle", "Alpine Chough", "Peregrine Falcon"],
+                answer: "Golden Eagle"
+            },
+            {
+                question: "Which type of tree dominates the Saint-Vincent landscape?",
+                options: ["Larch", "Oak", "Pine"],
+                answer: "Larch"
+            },
+            {
+                question: "What type of flower is known for covering the meadows of Saint-Vincent in spring?",
+                options: ["Edelweiss", "Gentian", "Primrose"],
+                answer: "Gentian"
+            },
+            {
+                question: "Which alpine mammal is often seen near Saint-Vincent?",
+                options: ["Ibex", "Marmot", "Red Squirrel"],
+                answer: "Marmot"
+            },
+            {
+                question: "What type of plant grows abundantly in the wetlands of Saint-Vincent?",
+                options: ["Water lily", "Reeds", "Alpine sedge"],
+                answer: "Alpine sedge"
+            },
+            {
+                question: "Which predator is a top species in the Saint-Vincent area?",
+                options: ["Wolf", "Lynx", "Brown bear"],
+                answer: "Wolf"
+            },
+            {
+                question: "What plant species is known for its medicinal properties in Saint-Vincent?",
+                options: ["Arnica", "Chamomile", "Lavender"],
+                answer: "Arnica"
+            },
+            {
+                question: "Which bird species migrates to Saint-Vincent during the summer?",
+                options: ["Swallow", "Cuckoo", "Nightjar"],
+                answer: "Swallow"
+            },
+            {
+                question: "Which species of butterfly is commonly found in Saint-Vincent?",
+                options: ["Swallowtail", "Monarch", "Painted Lady"],
+                answer: "Swallowtail"
+            },
+            {
+                question: "Which of these flowers is considered an alpine treasure in Saint-Vincent?",
+                options: ["Edelweiss", "Lily of the Valley", "Violet"],
+                answer: "Edelweiss"
+            },
+            {
+                question: "Which rare herb can be found in the high-altitude meadows of Saint-Vincent?",
+                options: ["Aconite", "Ginseng", "Alpine Chamomile"],
+                answer: "Aconite"
+            },
+            {
+                question: "What is the primary diet of the chamois found in Saint-Vincent?",
+                options: ["Grass and leaves", "Insects", "Fish"],
+                answer: "Grass and leaves"
+            },
+            {
+                question: "What animal species thrives in the alpine streams of Saint-Vincent?",
+                options: ["Trout", "Salmon", "Eel"],
+                answer: "Trout"
+            },
+            {
+                question: "Which endangered species has seen a population resurgence in the Saint-Vincent region?",
+                options: ["Lynx", "Brown bear", "Bearded vulture"],
+                answer: "Bearded vulture"
+            },
+            {
+                question: "Which large herbivore can be spotted in the meadows of Saint-Vincent?",
+                options: ["Ibex", "Deer", "Bison"],
+                answer: "Ibex"
+            },
+            {
+                question: "Which plant is known for its vibrant red berries in Saint-Vincent?",
+                options: ["Rowan", "Bilberry", "Elderberry"],
+                answer: "Rowan"
+            },
+            {
+                question: "Which tree species is vital to Saint-Vincent's ecosystem?",
+                options: ["Larch", "Spruce", "Cedar"],
+                answer: "Larch"
+            },
+            {
+                question: "What bird of prey is frequently seen soaring over Saint-Vincent’s valleys?",
+                options: ["Golden Eagle", "Buzzard", "Kestrel"],
+                answer: "Golden Eagle"
+            },
+            {
+                question: "Which species is known for its spectacular spring migrations through Saint-Vincent?",
+                options: ["Swallow", "Cuckoo", "Alpine Swift"],
+                answer: "Alpine Swift"
+            }
+        ]
+    }    
 ];
 
 export default quiz;

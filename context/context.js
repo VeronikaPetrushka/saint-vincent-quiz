@@ -3,7 +3,7 @@ import React, { createContext, useContext, useState } from 'react';
 const QuizContext = createContext();
 
 export const QuizProvider = ({ children }) => {
-    const [enabledTopics, setEnabledTopics] = useState([true, false, false, false, false, false]);
+    const [enabledTopics, setEnabledTopics] = useState([true, false, false, false, false, false, false, false, false]);
 
     const unlockNextTopic = (index) => {
         setEnabledTopics((prev) =>

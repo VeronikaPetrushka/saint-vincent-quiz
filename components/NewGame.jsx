@@ -22,7 +22,7 @@ const NewGame = () => {
         navigation.navigate('QuizExpertScreen');
     };
 
-    const allTopicsEnabled = enabledTopics.length === 6 && enabledTopics.every(enabled => enabled);
+    const allTopicsEnabled = enabledTopics.length === 9 && enabledTopics.every(enabled => enabled);
 
     return (
         <ImageBackground
