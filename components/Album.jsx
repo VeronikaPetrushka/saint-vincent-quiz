@@ -1,5 +1,5 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, Alert } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icons from './Icons';
@@ -56,6 +56,22 @@ const Album = () => {
     const handleNavigateToStore = () => {
         if (isQuizVisited) {
             navigation.navigate('StoreScreen');
+        } else {
+            Alert.alert(
+                "Store Unavailable",
+                "You need to complete at least one quiz before shopping!",
+                [
+                    {
+                        text: "Close",
+                        onPress: () => console.log("Alert closed"),
+                        style: "cancel"
+                    },
+                    {
+                        text: "Go to Quiz",
+                        onPress: () => navigation.navigate('NewGameScreen')
+                    }
+                ]
+            );
         }
     };
 
@@ -101,9 +117,8 @@ const Album = () => {
                 <View style={{ width: '100%' }}>
                     <Text style={styles.emptyText}>No purchased brochures yet.</Text>
                     <TouchableOpacity
-                        style={[styles.storeButton, !isQuizVisited && styles.disabledButton]}
+                        style={styles.storeButton}
                         onPress={handleNavigateToStore}
-                        disabled={!isQuizVisited}
                     >
                         <Text style={styles.storeButtonText}>Go to Store</Text>
                     </TouchableOpacity>
@@ -131,9 +146,6 @@ const Album = () => {
                             />
                         ))}
                     </View>
-                    {/* <TouchableOpacity style={styles.addBtn}>
-                        <Icons type={plus}/>
-                    </TouchableOpacity> */}
                 </View>
             )}
         </View>
@@ -198,9 +210,6 @@ const styles = StyleSheet.create({
         color: '#fff',
         fontSize: 16,
     },
-    disabledButton: {
-        opacity: 0.5,
-    },
     brochuresContainer: {
         justifyContent: 'center',
         alignItems: 'center',
@@ -230,12 +239,6 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#555',
         textAlign: 'center'
-    },
-    addBtn: {
-        width: '100%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginTop: 15
     }
 });
 

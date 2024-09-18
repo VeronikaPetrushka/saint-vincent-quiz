@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, TouchableOpacity, StyleSheet } from "react-native";
+import { SafeAreaView, TouchableOpacity, StyleSheet, Alert } from "react-native";
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from "./Icons";
@@ -41,6 +41,22 @@ const MenuPanel = () => {
     const handleNavigateToStore = () => {
         if (isQuizVisited) {
             navigation.navigate('StoreScreen');
+        } else {
+            Alert.alert(
+                "Store Unavailable",
+                "You need to complete at least one quiz before shopping!",
+                [
+                    {
+                        text: "Close",
+                        onPress: () => console.log("Alert closed"),
+                        style: "cancel"
+                    },
+                    {
+                        text: "Go to Quiz",
+                        onPress: () => navigation.navigate('NewGameScreen')
+                    }
+                ]
+            );
         }
     };
 
@@ -58,8 +74,7 @@ const MenuPanel = () => {
         <SafeAreaView style={styles.container}>
             <TouchableOpacity 
                 onPress={handleNavigateToStore} 
-                disabled={!isQuizVisited} 
-                style={[styles.button, isCurrent('StoreScreen') && styles.activeButton, !isQuizVisited && styles.disabledButton]}
+                style={[styles.button, isCurrent('StoreScreen') && styles.activeButton]}
             >
                 <Icons type={shop} />
             </TouchableOpacity>
