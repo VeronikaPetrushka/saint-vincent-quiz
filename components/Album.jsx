@@ -3,15 +3,19 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icons from './Icons';
+import CreateBrochure from './CreateBrochure';
 
 const Album = () => {
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
     const [selectedBrochure, setSelectedBrochure] = useState(null);
     const [currentPage, setCurrentPage] = useState(0);
     const [isQuizVisited, setIsQuizVisited] = useState(false);
+    const [isModalVisible, setIsModalVisible] = useState(false);
+    const [userBrochures, setUserBrochures] = useState([]);
     const navigation = useNavigation();
 
-    const plus = 'plus'
+    const plus = 'plus';
+    const trash = 'delete';
 
     const loadPurchasedBrochures = useCallback(async () => {
         try {
@@ -35,6 +39,25 @@ const Album = () => {
         }
     }, []);
 
+    const loadUserBrochures = useCallback(async () => {
+        try {
+            const storedUserBrochures = await AsyncStorage.getItem('UserBrochures');
+            if (storedUserBrochures) {
+                setUserBrochures(JSON.parse(storedUserBrochures));
+            } else {
+                setUserBrochures([]);
+            }
+        } catch (error) {
+            console.error('Failed to load user brochures:', error);
+        }
+    }, []);
+
+    const handleBrochureSubmit = async (newBrochure) => {
+        const updatedBrochures = [...userBrochures, newBrochure];
+        setUserBrochures(updatedBrochures);
+        await AsyncStorage.setItem('UserBrochures', JSON.stringify(updatedBrochures));
+    };
+
     const checkQuizVisited = useCallback(async () => {
         try {
             const visited = await AsyncStorage.getItem('quizVisited');
@@ -48,10 +71,13 @@ const Album = () => {
 
     useFocusEffect(
         useCallback(() => {
-            loadPurchasedBrochures(); 
+            loadPurchasedBrochures();
             checkQuizVisited();
-        }, [loadPurchasedBrochures, checkQuizVisited])
+            loadUserBrochures();
+        }, [loadPurchasedBrochures, checkQuizVisited, loadUserBrochures])
     );
+
+    const combinedBrochures = [...purchasedBrochures, ...userBrochures];
 
     const handleNavigateToStore = () => {
         if (isQuizVisited) {
@@ -83,22 +109,38 @@ const Album = () => {
         }
     };
 
+    const deleteUserBrochure = async (item) => {
+        const updatedBrochures = userBrochures.filter(brochure => brochure.name !== item.name);
+        setUserBrochures(updatedBrochures);
+        await AsyncStorage.setItem('UserBrochures', JSON.stringify(updatedBrochures));
+        Alert.alert("Deleted", "Brochure has been removed from your album.");
+    };
+
     const renderBrochureItem = ({ item }) => (
         <TouchableOpacity onPress={() => handleBrochurePress(item)}>
             <View style={styles.brochureCard}>
                 {selectedBrochure && selectedBrochure.name === item.name ? (
                     <ScrollView contentContainerStyle={styles.factContainer}>
-                        <Text style={styles.factTitle}>{selectedBrochure.fact.factName}</Text>
-                        <Text style={styles.factDescription}>{selectedBrochure.fact.description}</Text>
+                        <Text style={styles.factTitle}>{item.fact ? item.fact.factName : item.name}</Text>
+                        <Text style={styles.factDescription}>
+                            {item.fact ? item.fact.description : (item.date ? `Date: ${item.date}` : '')}
+                        </Text>
+                        {item.description ? <Text style={styles.factDescription}>Description: {item.description}</Text> : null}
                     </ScrollView>
                 ) : (
                     <>
                         <Image
-                            source={item.image}
+                            source={typeof item.image === 'string' ? { uri: item.image } : item.image}
                             style={styles.brochureImage}
                         />
                         <Text style={styles.brochureTitle}>{item.name}</Text>
                     </>
+                )}
+
+                {userBrochures.includes(item) && (
+                    <TouchableOpacity onPress={() => deleteUserBrochure(item)} style={styles.deleteButton}>
+                        <Icons type={trash}/>
+                    </TouchableOpacity>
                 )}
             </View>
         </TouchableOpacity>
@@ -110,12 +152,21 @@ const Album = () => {
         setCurrentPage(newPage);
     };
 
+    const handleAddBrochure = () => {
+        setIsModalVisible(true);
+    };
+
+    const closeModal = () => {
+        setIsModalVisible(false);
+    };
+
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Album</Text>
-            {purchasedBrochures.length === 0 ? (
+
+            {combinedBrochures.length === 0 ? (
                 <View style={{ width: '100%' }}>
-                    <Text style={styles.emptyText}>No purchased brochures yet.</Text>
+                    <Text style={styles.emptyText}>No brochures added yet.</Text>
                     <TouchableOpacity
                         style={styles.storeButton}
                         onPress={handleNavigateToStore}
@@ -126,7 +177,7 @@ const Album = () => {
             ) : (
                 <View>
                     <FlatList
-                        data={purchasedBrochures}
+                        data={combinedBrochures}
                         renderItem={renderBrochureItem}
                         keyExtractor={(item) => item.name}
                         horizontal
@@ -135,8 +186,9 @@ const Album = () => {
                         showsHorizontalScrollIndicator={false}
                         contentContainerStyle={styles.brochuresContainer}
                     />
+
                     <View style={styles.dotsContainer}>
-                        {purchasedBrochures.map((_, index) => (
+                        {combinedBrochures.map((_, index) => (
                             <View
                                 key={index}
                                 style={[
@@ -146,13 +198,21 @@ const Album = () => {
                             />
                         ))}
                     </View>
+
+                    <TouchableOpacity style={styles.addBtn} onPress={handleAddBrochure}>
+                        <Icons type={plus} />
+                    </TouchableOpacity>
                 </View>
             )}
+
+            <CreateBrochure 
+                visible={isModalVisible} 
+                onClose={closeModal}
+                onSubmit={handleBrochureSubmit} 
+                />
         </View>
     );
 };
-
-
 
 const styles = StyleSheet.create({
     container: {
@@ -208,6 +268,8 @@ const styles = StyleSheet.create({
     },
     storeButtonText: {
         color: '#fff',
+       
+
         fontSize: 16,
     },
     brochuresContainer: {
@@ -239,6 +301,16 @@ const styles = StyleSheet.create({
         fontSize: 18,
         color: '#555',
         textAlign: 'center'
+    },
+    addBtn: {
+        alignSelf: 'center',
+        marginTop: 10
+    },
+    deleteButton: {
+        position: 'absolute',
+        bottom: 10,
+        right: 30,
+        padding: 10
     }
 });
 

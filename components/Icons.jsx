@@ -32,6 +32,12 @@ const Icons = ({ type }) => {
       imageSource = require('../assets/quiz/plus.png');
       iconStyle = styles.plusIcon;
       break;
+    case 'edit':
+      imageSource = require('../assets/quiz/edit.png');
+      break;
+    case 'delete':
+      imageSource = require('../assets/quiz/delete.png');
+      break;
   }
 
   return (
