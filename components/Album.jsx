@@ -138,9 +138,9 @@ const Album = () => {
                     <ScrollView contentContainerStyle={styles.factContainer}>
                         <Text style={styles.factTitle}>{item.fact ? item.fact.factName : item.name}</Text>
                         <Text style={styles.factDescription}>
-                            {item.fact ? item.fact.description : (item.date ? `Date: ${item.date}` : '')}
+                            {item.fact ? item.fact.description : (item.date ? item.date : '')}
                         </Text>
-                        {item.description ? <Text style={styles.factDescription}>Description: {item.description}</Text> : null}
+                        {item.description ? <Text style={styles.factDescription}>{item.description}</Text> : null}
                     </ScrollView>
                 ) : (
                     <View style={styles.cardFront}>
