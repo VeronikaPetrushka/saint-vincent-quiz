@@ -2,19 +2,25 @@ import React, { useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuiz } from '../context/context.js';
+import UserProfile from './UserProfile.jsx';
 
 const Settings = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
+    const [shouldResetProfile, setShouldResetProfile] = useState(false);
     const { setEnabledTopics } = useQuiz();
 
     const handleResetProgress = async () => {
         try {
             await AsyncStorage.removeItem('totalBalance');
-
+            await AsyncStorage.removeItem('UserBrochures');
+            await AsyncStorage.removeItem('purchasedState');
+            await AsyncStorage.removeItem('userProfile');
+            await AsyncStorage.removeItem('userAvatar');
+    
             const storedBrochures = await AsyncStorage.getItem('brochures');
             if (storedBrochures) {
                 const brochures = JSON.parse(storedBrochures);
-
+    
                 const updatedBrochures = brochures.map(topic => ({
                     ...topic,
                     cards: topic.cards.map(card => ({
@@ -22,23 +28,34 @@ const Settings = () => {
                         purchased: false
                     }))
                 }));
-
+    
                 await AsyncStorage.setItem('brochures', JSON.stringify(updatedBrochures));
             }
-
+    
+            const newPurchasedState = {};
+            await AsyncStorage.setItem('purchasedState', JSON.stringify(newPurchasedState));
+    
             setEnabledTopics([true, false, false, false, false, false]);
-
+            setShouldResetProfile(true);
+            
             setIsModalVisible(false);
-            Alert.alert('Success', 'Progress and purchases have been reset.');
+            Alert.alert('Success', 'Progress, purchases, and profile have been reset.');
         } catch (error) {
             console.error('Failed to reset progress and purchases:', error);
             Alert.alert('Error', 'Failed to reset progress.');
         }
     };
+    
+
+    const handleModalClose = () => {
+        setIsModalVisible(false);
+        setShouldResetProfile(false);
+    };
 
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Settings</Text>
+            <UserProfile resetProfile={shouldResetProfile} />
             <TouchableOpacity
                 style={styles.resetButton}
                 onPress={() => setIsModalVisible(true)}
@@ -55,7 +72,7 @@ const Settings = () => {
                 <View style={styles.modalContainer}>
                     <View style={styles.modalContent}>
                         <Text style={styles.modalTitle}>Are you sure?</Text>
-                        <Text style={styles.modalMessage}>Do you really want to reset your progress and purchases? This action cannot be undone.</Text>
+                        <Text style={styles.modalMessage}>Do you really want to reset your progress, purchases, and profile? This action cannot be undone.</Text>
                         <View style={styles.modalButtons}>
                             <TouchableOpacity
                                 style={[styles.modalButton, styles.yesButton]}
@@ -65,7 +82,7 @@ const Settings = () => {
                             </TouchableOpacity>
                             <TouchableOpacity
                                 style={[styles.modalButton, styles.noButton]}
-                                onPress={() => setIsModalVisible(false)}
+                                onPress={handleModalClose}
                             >
                                 <Text style={styles.modalButtonText}>No</Text>
                             </TouchableOpacity>
@@ -76,6 +93,9 @@ const Settings = () => {
         </View>
     );
 };
+
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -97,7 +117,7 @@ const styles = StyleSheet.create({
         borderRadius: 15,
         alignItems: 'center',
         width: '100%',
-        marginTop: 300
+        marginTop: 30
     },
     resetButtonText: {
         color: '#fff',
