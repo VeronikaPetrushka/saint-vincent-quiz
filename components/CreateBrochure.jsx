@@ -1,14 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const CreateBrochure = ({ visible, onClose, onSubmit }) => {
+const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
     const [name, setName] = useState('');
     const [date, setDate] = useState('');
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
     const [errors, setErrors] = useState({ name: '', date: '', image: '' });
+
+    useEffect(() => {
+        if (brochureToEdit) {
+            setName(brochureToEdit.name);
+            setDate(brochureToEdit.date);
+            setDescription(brochureToEdit.description);
+            setImage(brochureToEdit.image ? { uri: brochureToEdit.image } : null);
+        } else {
+            setName('');
+            setDate('');
+            setDescription('');
+            setImage(null);
+        }
+    }, [brochureToEdit]);
 
     const options = {
         mediaType: 'photo',
@@ -63,14 +77,25 @@ const CreateBrochure = ({ visible, onClose, onSubmit }) => {
                 const storedBrochures = await AsyncStorage.getItem('UserBrochures');
                 const brochures = storedBrochures ? JSON.parse(storedBrochures) : [];
 
-                brochures.push(newBrochure);
-
-                await AsyncStorage.setItem('UserBrochures', JSON.stringify(brochures));
+                if (brochureToEdit) {
+                    const updatedBrochures = brochures.map(brochure =>
+                        brochure.name === brochureToEdit.name ? newBrochure : brochure
+                    );
+                    await AsyncStorage.setItem('UserBrochures', JSON.stringify(updatedBrochures));
+                } else {
+                    brochures.push(newBrochure);
+                    await AsyncStorage.setItem('UserBrochures', JSON.stringify(brochures));
+                }
 
                 onSubmit(newBrochure);
-
-                console.log('Brochure added:', newBrochure);
                 onClose();
+
+                setName('');
+                setDate('');
+                setDescription('');
+                setImage(null);
+                setErrors({ name: '', date: '', image: '' });
+
             } catch (error) {
                 console.error('Failed to save brochure:', error);
             }
@@ -79,23 +104,15 @@ const CreateBrochure = ({ visible, onClose, onSubmit }) => {
         }
     };
 
-
     return (
-        <Modal
-            visible={visible}
-            animationType="slide"
-            transparent={true}
-            onRequestClose={onClose}
-        >
+        <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                     <ScrollView contentContainerStyle={styles.container}>
-                        <Text style={styles.title}>Add New Brochure</Text>
+                        <Text style={styles.title}>{brochureToEdit ? 'Edit Brochure' : 'Add New Brochure'}</Text>
 
-                        {image && (
-                            <Image source={image} style={styles.imagePreview} />
-                        )}
-                        {errors.image ? <Text style={styles.errorText}>{errors.image}</Text> : null}
+                        {image && <Image source={image} style={styles.imagePreview} />}
+                        {errors.image && <Text style={styles.errorText}>{errors.image}</Text>}
 
                         <TouchableOpacity style={styles.imageButton} onPress={pickImageFromGallery}>
                             <Text style={styles.buttonText}>Pick an Image from Gallery</Text>
@@ -112,7 +129,7 @@ const CreateBrochure = ({ visible, onClose, onSubmit }) => {
                             onChangeText={setName}
                             maxLength={30}
                         />
-                        {errors.name ? <Text style={styles.errorText}>{errors.name}</Text> : null}
+                        {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
                         <TextInput
                             style={styles.input}
@@ -122,7 +139,7 @@ const CreateBrochure = ({ visible, onClose, onSubmit }) => {
                             maxLength={10}
                         />
                         <Text style={styles.note}>Format: YYYY-MM-DD / DD-MM-YY</Text>
-                        {errors.date ? <Text style={styles.errorText}>{errors.date}</Text> : null}
+                        {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
 
                         <TextInput
                             style={styles.textArea}
@@ -144,6 +161,8 @@ const CreateBrochure = ({ visible, onClose, onSubmit }) => {
         </Modal>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {

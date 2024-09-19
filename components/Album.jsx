@@ -12,10 +12,12 @@ const Album = () => {
     const [isQuizVisited, setIsQuizVisited] = useState(false);
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [userBrochures, setUserBrochures] = useState([]);
+    const [brochureToEdit, setBrochureToEdit] = useState(null);
     const navigation = useNavigation();
 
     const plus = 'plus';
     const trash = 'delete';
+    const edit = 'edit';
 
     const loadPurchasedBrochures = useCallback(async () => {
         try {
@@ -53,9 +55,17 @@ const Album = () => {
     }, []);
 
     const handleBrochureSubmit = async (newBrochure) => {
-        const updatedBrochures = [...userBrochures, newBrochure];
+        let updatedBrochures;
+        if (brochureToEdit) {
+            updatedBrochures = userBrochures.map(brochure => 
+                brochure.name === brochureToEdit.name ? newBrochure : brochure
+            );
+        } else {
+            updatedBrochures = [...userBrochures, newBrochure];
+        }
         setUserBrochures(updatedBrochures);
         await AsyncStorage.setItem('UserBrochures', JSON.stringify(updatedBrochures));
+        setBrochureToEdit(null);
     };
 
     const checkQuizVisited = useCallback(async () => {
@@ -116,6 +126,11 @@ const Album = () => {
         Alert.alert("Deleted", "Brochure has been removed from your album.");
     };
 
+    const handleEditBrochure = (item) => {
+        setBrochureToEdit(item);
+        setIsModalVisible(true);
+    };
+
     const renderBrochureItem = ({ item }) => (
         <TouchableOpacity onPress={() => handleBrochurePress(item)}>
             <View style={styles.brochureCard}>
@@ -128,19 +143,24 @@ const Album = () => {
                         {item.description ? <Text style={styles.factDescription}>Description: {item.description}</Text> : null}
                     </ScrollView>
                 ) : (
-                    <>
+                    <View style={styles.cardFront}>
                         <Image
                             source={typeof item.image === 'string' ? { uri: item.image } : item.image}
                             style={styles.brochureImage}
                         />
                         <Text style={styles.brochureTitle}>{item.name}</Text>
-                    </>
+                    </View>
                 )}
 
                 {userBrochures.includes(item) && (
-                    <TouchableOpacity onPress={() => deleteUserBrochure(item)} style={styles.deleteButton}>
-                        <Icons type={trash}/>
-                    </TouchableOpacity>
+                    <View style={styles.actionButtons}>
+                        <TouchableOpacity onPress={() => deleteUserBrochure(item)} style={styles.deleteButton}>
+                            <Icons type={trash} />
+                        </TouchableOpacity>
+                        <TouchableOpacity onPress={() => handleEditBrochure(item)} style={styles.editButton}>
+                            <Icons type={edit} />
+                        </TouchableOpacity>
+                    </View>
                 )}
             </View>
         </TouchableOpacity>
@@ -153,6 +173,7 @@ const Album = () => {
     };
 
     const handleAddBrochure = () => {
+        setBrochureToEdit(null);
         setIsModalVisible(true);
     };
 
@@ -208,11 +229,14 @@ const Album = () => {
             <CreateBrochure 
                 visible={isModalVisible} 
                 onClose={closeModal}
-                onSubmit={handleBrochureSubmit} 
-                />
+                onSubmit={handleBrochureSubmit}
+                brochureToEdit={brochureToEdit}
+            />
         </View>
     );
 };
+
+
 
 const styles = StyleSheet.create({
     container: {
@@ -306,11 +330,27 @@ const styles = StyleSheet.create({
         alignSelf: 'center',
         marginTop: 10
     },
+    actionButtons: {
+        flexDirection: 'row',
+        width: '100%',
+    },
     deleteButton: {
         position: 'absolute',
-        bottom: 10,
-        right: 30,
+        bottom: 30,
+        left: 10,
         padding: 10
+    },
+    editButton: {
+        position: 'absolute',
+        bottom: 30,
+        right: 10,
+        padding: 10
+    },
+    cardFront: {
+        width: '100%',
+        height: '100%',
+        alignItems: 'center',
+        justifyContent: 'space-between'
     }
 });
 
