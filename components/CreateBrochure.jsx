@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { Calendar } from 'react-native-calendars';
 
 const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
     const [name, setName] = useState('');
@@ -9,6 +10,7 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
     const [description, setDescription] = useState('');
     const [image, setImage] = useState(null);
     const [errors, setErrors] = useState({ name: '', date: '', image: '' });
+    const [showCalendar, setShowCalendar] = useState(false);
 
     useEffect(() => {
         if (brochureToEdit) {
@@ -17,12 +19,17 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
             setDescription(brochureToEdit.description);
             setImage(brochureToEdit.image ? { uri: brochureToEdit.image } : null);
         } else {
-            setName('');
-            setDate('');
-            setDescription('');
-            setImage(null);
+            clearFields();
         }
     }, [brochureToEdit]);
+
+    const clearFields = () => {
+        setName('');
+        setDate('');
+        setDescription('');
+        setImage(null);
+        setErrors({ name: '', date: '', image: '' });
+    };
 
     const options = {
         mediaType: 'photo',
@@ -59,9 +66,8 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
             valid = false;
         }
 
-        const datePattern = /^(?:\d{2}-\d{2}-\d{2}|\d{2}-\d{2}-\d{4}|\d{4}-\d{2}-\d{2})$/;
-        if (!datePattern.test(date)) {
-            newErrors.date = 'Date must be in the format yy-mm-dd or dd-mm-yy';
+        if (!date) {
+            newErrors.date = 'Date is required';
             valid = false;
         }
 
@@ -88,14 +94,8 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
                 }
 
                 onSubmit(newBrochure);
+                clearFields();
                 onClose();
-
-                setName('');
-                setDate('');
-                setDescription('');
-                setImage(null);
-                setErrors({ name: '', date: '', image: '' });
-
             } catch (error) {
                 console.error('Failed to save brochure:', error);
             }
@@ -104,8 +104,20 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
         }
     };
 
+    const handleClose = () => {
+        if (!brochureToEdit) {
+            clearFields(); // Reset fields when adding a new brochure
+        }
+        onClose();
+    };
+
+    const handleDayPress = (day) => {
+        setDate(day.dateString);
+        setShowCalendar(false);
+    };
+
     return (
-        <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={onClose}>
+        <Modal visible={visible} animationType="slide" transparent={true} onRequestClose={handleClose}>
             <View style={styles.modalContainer}>
                 <View style={styles.modalContent}>
                     <ScrollView contentContainerStyle={styles.container}>
@@ -131,15 +143,19 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
                         />
                         {errors.name && <Text style={styles.errorText}>{errors.name}</Text>}
 
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Enter Date"
-                            value={date}
-                            onChangeText={setDate}
-                            maxLength={10}
-                        />
-                        <Text style={styles.note}>Format: YYYY-MM-DD / DD-MM-YY</Text>
+                        <TouchableOpacity onPress={() => setShowCalendar(!showCalendar)} style={styles.dateInput}>
+                            <Text>{date ? date : 'Select Date'}</Text>
+                        </TouchableOpacity>
                         {errors.date && <Text style={styles.errorText}>{errors.date}</Text>}
+
+                        {showCalendar && (
+                            <Calendar
+                                onDayPress={handleDayPress}
+                                markedDates={{
+                                    [date]: { selected: true, selectedColor: 'blue' },
+                                }}
+                            />
+                        )}
 
                         <TextInput
                             style={styles.textArea}
@@ -152,7 +168,7 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
                         <Text style={styles.note}>Optional</Text>
 
                         <Button title="Submit" onPress={handleSubmit} />
-                        <TouchableOpacity onPress={onClose} style={styles.closeButton}>
+                        <TouchableOpacity onPress={handleClose} style={styles.closeButton}>
                             <Text style={styles.closeButtonText}>Close</Text>
                         </TouchableOpacity>
                     </ScrollView>
@@ -184,6 +200,17 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         paddingHorizontal: 10,
         marginTop: 10,
+    },
+    dateInput: {
+        borderWidth: 1,
+        borderColor: '#DDDDDD',
+        padding: 10,
+        marginBottom: 10,
+        borderRadius: 10,
+        height: 50,
+        paddingHorizontal: 10,
+        marginTop: 10,
+        justifyContent: 'center'
     },
     textArea: {
         height: 140,

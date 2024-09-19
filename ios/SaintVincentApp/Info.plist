@@ -49,5 +49,13 @@
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSCameraUsageDescription</key>
+ 	<string>This app uses the camera to take a user avatar and photo to store in app private internal data set.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>This app uses the Photo Library to select a photo only.</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>We need permission to save photos to your library.</string>
+	<key>NSMicrophoneUsageDescription</key>
+ 	<string>To record audio files during video recording</string>
 </dict>
 </plist>
