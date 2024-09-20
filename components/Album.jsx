@@ -194,6 +194,9 @@ const Album = () => {
                     >
                         <Text style={styles.storeButtonText}>Go to Store</Text>
                     </TouchableOpacity>
+                    <TouchableOpacity style={styles.addBtnEmpty} onPress={handleAddBrochure}>
+                        <Icons type={plus} />
+                    </TouchableOpacity>
                 </View>
             ) : (
                 <View>
@@ -329,6 +332,11 @@ const styles = StyleSheet.create({
     addBtn: {
         alignSelf: 'center',
         marginTop: 10
+    },
+    addBtnEmpty: {
+        position: 'absolute',
+        top: 600,
+        left: '40%'
     },
     actionButtons: {
         flexDirection: 'row',
