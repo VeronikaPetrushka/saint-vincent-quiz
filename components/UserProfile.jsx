@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, View, Text, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, FlatList } from 'react-native';
+import { View, Text, Image, TextInput, TouchableOpacity, KeyboardAvoidingView, TouchableWithoutFeedback, Keyboard, FlatList, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+
+const { height } = Dimensions.get('window');
 
 const AVATAR_IMAGES = [
   { id: '1', uri: require('../assets/avatars/gorilla.png') },
@@ -105,7 +107,7 @@ const UserProfile = ({ resetProfile }) => {
       style={styles.container}
     >
       <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
           <View style={styles.upperContainer}>
             <Text style={styles.title}>Account</Text>
             <TouchableOpacity onPress={toggleAvatarSelection} style={styles.avatarPlaceholder}>
@@ -139,7 +141,7 @@ const UserProfile = ({ resetProfile }) => {
               </View>
             )}
           </View>
-        </SafeAreaView>
+        </View>
       </TouchableWithoutFeedback>
     </KeyboardAvoidingView>
   );
@@ -154,7 +156,7 @@ const styles = {
         justifyContent: "start",
         alignItems: "center",
         width: "100%",
-        height: "60%",
+        height: "57%",
         backgroundColor: "white",
         borderRadius: 15
     },
@@ -169,12 +171,12 @@ const styles = {
     title: {
       fontSize: 20,
       fontWeight: "bold",
-      marginBottom: 30
+      marginBottom: height * 0.03
     },
 
     avatarPlaceholder: {
-      width: 130,
-      height: 130,
+      width: height * 0.13,
+      height: height * 0.13,
       borderWidth: 1,
       borderColor: "#ccc",
       borderRadius: 100,
@@ -182,14 +184,13 @@ const styles = {
 
     inputContainer: {
       width: "100%",
-      height: "60%",
       justifyContent: "space-between"
     },
 
     input: {
       paddingVertical: 10,
       paddingHorizontal: 20,
-      marginTop: 30,
+      marginVertical: 30,
       borderWidth: 1,
       borderColor: "#ccc",
       borderRadius: 10,

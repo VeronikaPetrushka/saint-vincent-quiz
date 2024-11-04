@@ -1,14 +1,14 @@
 import React from 'react';
-import { SafeAreaView } from "react-native";
+import { View } from "react-native";
 import DailyQuiz from '../components/DailyQuiz';
 
 const DailyQuizScreen = () => {
 
 
     return (
-        <SafeAreaView>
+        <View>
             <DailyQuiz />
-        </SafeAreaView>
+        </View>
     );
 };
 

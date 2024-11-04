@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, FlatList, TouchableOpacity, Share } from 'react-native';
+import { View, Text, StyleSheet, FlatList, TouchableOpacity, Share, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons';
+
+const { height } = Dimensions.get('window');
 
 const generateRandomPeople = () => {
     const names = ['John Doe', 'Jane Smith', 'Emily Johnson', 'Michael Brown', 'Sarah Davis', 'David Wilson', 'Laura Miller'];
@@ -76,7 +78,9 @@ const styles = StyleSheet.create({
     container: {
         padding: 20,
         backgroundColor: '#c7d3b8',
-        height: '110%'
+        height: '100%',
+        paddingBottom: height * 0.25,
+        paddingTop: height * 0.07
     },
     header: {
         fontSize: 24,
@@ -129,7 +133,7 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         borderRadius: 15,
         position: 'absolute',
-        bottom: 200,
+        bottom: 100,
         left: '6%',
         width: '100%'
     },

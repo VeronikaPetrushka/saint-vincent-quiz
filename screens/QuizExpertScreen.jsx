@@ -1,5 +1,5 @@
 import React from 'react';
-import { SafeAreaView, View } from "react-native";
+import { View } from "react-native";
 import QuizExpert from '../components/QuizExpert';
 import MenuPanel from "../components/MenuPanel"
 
@@ -7,12 +7,12 @@ const QuizExpertScreen = () => {
 
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <QuizExpert />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -23,9 +23,9 @@ const styles = {
     },
 
     menu: {
-        position: 'fixed',
+        position: 'absolute',
         width: "100%",
-        top: -140
+        bottom: 15
     }
 }
 

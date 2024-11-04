@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, Alert, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import quiz from '../constants/quiz.js';
 import shuffleArray from '../utils/shuffle.js';
 import Icons from './Icons.jsx';
+
+const { height } = Dimensions.get('window');
 
 const QuizGenius = () => {
     const navigation = useNavigation();
@@ -266,10 +268,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         width: '100%',
         height: '100%',
+        paddingTop: height * 0.07
     },
     backgroundImage: {
         width: '100%',
-        height: '110%',
+        height: '100%',
         justifyContent: 'center',
     },
     overlay: {
@@ -282,15 +285,16 @@ const styles = StyleSheet.create({
     topicText: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 50,
-        marginTop: 50,
+        marginBottom: height * 0.05,
+        marginTop: height * 0.05,
         color: "white"
     },
     questionText: {
         fontSize: 20,
-        marginBottom: 30,
+        marginBottom: height * 0.03,
         color: "white",
-        fontWeight: 600,
+        fontWeight: '600',
+        textAlign: 'center'
     },
     scoreText: {
         fontSize: 18,
@@ -301,7 +305,7 @@ const styles = StyleSheet.create({
         fontWeight: 'bold',
     },
     optionsContainer: {
-        marginBottom: 20,
+        marginBottom: height * 0.02,
         width: '100%',
     },
     optionButton: {
@@ -363,10 +367,10 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginVertical: 10,
-        marginBottom: 200,
+        marginBottom: height * 0.13,
         width: "100%",
         padding: 10,
-        paddingHorizontal: 30,
+        paddingHorizontal: height * 0.03,
         backgroundColor: 'white',
         borderRadius: 30
     },
@@ -374,13 +378,13 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 32,
         fontWeight: 'bold',
-        marginVertical: 50
+        marginVertical: height * 0.05
     },
     finishText: {
         color: 'white',
         fontSize: 24,
         fontWeight: 700,
-        marginBottom: 100,
+        marginBottom: height * 0.1,
         textAlign: 'center'
     },
     finishScore: {

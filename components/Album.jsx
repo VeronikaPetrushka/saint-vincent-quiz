@@ -1,9 +1,11 @@
 import React, { useState, useCallback } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, Alert, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation, useFocusEffect } from '@react-navigation/native';
 import Icons from './Icons';
 import CreateBrochure from './CreateBrochure';
+
+const { height } = Dimensions.get('window');
 
 const Album = () => {
     const [purchasedBrochures, setPurchasedBrochures] = useState([]);
@@ -245,15 +247,16 @@ const styles = StyleSheet.create({
     container: {
         padding: 16,
         backgroundColor: '#fff',
-        height: "110%",
+        height: "100%",
         width: '100%',
         backgroundColor: '#c7d3b8',
-        paddingBottom: 170
+        paddingBottom: height * 0.17,
+        paddingTop: height * 0.07
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 20,
+        marginBottom: height * 0.02,
         alignSelf: 'center',
         color: 'white'
     },
@@ -267,12 +270,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         minWidth: 300,
-        width: 370,
-        height: 550
+        width: height * 0.4,
+        height: height * 0.6
     },
     brochureImage: {
         width: "100%",
-        height: 430,
+        height: height * 0.43,
         marginBottom: 8,
         borderRadius: 10
     },
@@ -283,11 +286,11 @@ const styles = StyleSheet.create({
     emptyText: {
         fontSize: 18,
         textAlign: 'center',
-        marginTop: 50,
+        marginTop: height * 0.05,
         color: '#333333'
     },
     storeButton: {
-        marginTop: 20,
+        marginTop: height * 0.02,
         padding: 12,
         backgroundColor: '#618e4d',
         borderRadius: 15,
@@ -295,8 +298,6 @@ const styles = StyleSheet.create({
     },
     storeButtonText: {
         color: '#fff',
-       
-
         fontSize: 16,
     },
     brochuresContainer: {
@@ -331,7 +332,7 @@ const styles = StyleSheet.create({
     },
     addBtn: {
         alignSelf: 'center',
-        marginTop: 10
+        marginTop: 10,
     },
     addBtnEmpty: {
         position: 'absolute',

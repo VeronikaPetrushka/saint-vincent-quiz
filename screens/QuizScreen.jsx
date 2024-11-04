@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { SafeAreaView } from "react-native";
+import { View } from "react-native";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Quiz from "../components/Quiz";
 import quiz from '../constants/quiz.js';
@@ -21,9 +21,9 @@ const QuizScreen = ({ route }) => {
     }, []);
 
     return (
-        <SafeAreaView>
+        <View>
             <Quiz topic={topic} topicIndex={topicIndex} />
-        </SafeAreaView>
+        </View>
     );
 };
 

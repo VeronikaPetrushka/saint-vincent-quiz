@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, FlatList, Alert } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Modal, Button, ImageBackground, FlatList, Alert, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
 import Icons from './Icons.jsx';
 import brochures from '../constants/brochures.js';
+
+const { height } = Dimensions.get('window');
 
 const Quiz = ({ topic, topicIndex }) => {
     const navigation = useNavigation();
@@ -356,14 +358,15 @@ return (
 const styles = StyleSheet.create({
     container: {
         paddingHorizontal: 30,
-        paddingVertical: 20,
+        paddingBottom: 20,
+        paddingTop: height * 0.07,
         alignItems: 'center',
         width: '100%',
         height: '100%',
     },
     backgroundImage: {
         width: '100%',
-        height: '110%',
+        height: '100%',
         justifyContent: 'center',
     },
     overlay: {
@@ -376,8 +379,8 @@ const styles = StyleSheet.create({
     topicName: {
         fontSize: 24,
         fontWeight: 'bold',
-        marginBottom: 40,
-        marginTop: 30,
+        marginBottom: height * 0.04,
+        marginTop: height * 0.03,
         color: 'white'
     },
     scoreText: {
@@ -389,7 +392,7 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
         color: 'white',
-        marginBottom: 20
+        marginBottom: height * 0.02
     },
     questionContainer: {
         marginBottom: 20,
@@ -397,9 +400,9 @@ const styles = StyleSheet.create({
     },
     questionText: {
         fontSize: 20,
-        marginBottom: 200,
+        marginBottom: height * 0.15,
         textAlign: 'center',
-        height: 50,
+        height: height * 0.05,
         color: 'white'
     },
     optionButton: {
@@ -407,7 +410,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,
-        marginBottom: 10,
+        marginBottom: height * 0.01,
         alignItems: 'center',
         justifyContent: 'center',
     },
@@ -425,12 +428,12 @@ const styles = StyleSheet.create({
         backgroundColor: '#6aa84f',
     },
     nextButton: {
-        padding: 15,
+        padding: height * 0.015,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 15,
         backgroundColor: '#618e4d',
-        marginTop: 10,
+        marginTop: height * 0.01,
         alignItems: 'center',
         justifyContent: 'center',
         width: 200,
@@ -444,7 +447,7 @@ const styles = StyleSheet.create({
         alignItems: "center",
         justifyContent: "space-between",
         flexDirection: "row",
-        marginBottom: 50
+        marginBottom: height * 0.05
     },
     hintButton: {
         padding: 7,
@@ -452,7 +455,7 @@ const styles = StyleSheet.create({
         borderColor: '#ccc',
         borderRadius: 15,
         backgroundColor: '#ffc107',
-        marginTop: 10,
+        marginTop: height * 0.01,
         alignItems: 'center',
         justifyContent: 'center',
         width: 100,
@@ -493,7 +496,7 @@ const styles = StyleSheet.create({
     brochureList: {
         width: '100%',
         marginVertical: 20,
-        marginBottom: 130
+        paddingBottom: height * 0.05
     },
     brochureCard: {
         backgroundColor: '#f9f9f9',
@@ -503,12 +506,12 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: "48%",
-        height: 330,
+        height: height * 0.33,
         margin: 5
     },
     brochureImage: {
         width: "100%",
-        height: 200,
+        height: height * 0.2,
         borderRadius: 10,
         marginBottom: 10,
         overflow: 'hidden'
@@ -540,7 +543,7 @@ const styles = StyleSheet.create({
         backgroundColor: '#618e4d',
         alignItems: 'center',
         justifyContent: 'center',
-        marginBottom: 20,
+        marginBottom: height * 0.02,
         marginTop: 5,
         padding: 10
     },

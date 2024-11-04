@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, SafeAreaView } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, ScrollView, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from './Icons';
+
+const { height } = Dimensions.get('window');
 
 const Store = ({ navigation }) => {
     const [totalBalance, setTotalBalance] = useState(0);
@@ -106,7 +108,7 @@ const Store = ({ navigation }) => {
     };
 
     return (
-        <SafeAreaView style={styles.wrapper}>
+        <View style={styles.wrapper}>
             <ScrollView style={styles.container}>
                 <View style={styles.balanceContainer}>
                     <Icons type={balanceIcon} />
@@ -138,8 +140,9 @@ const Store = ({ navigation }) => {
                         </View>
                     ))
                 )}
+                <View style={{height: 100}}/>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     );
 };
 
@@ -148,8 +151,9 @@ const Store = ({ navigation }) => {
 
 const styles = StyleSheet.create({
     wrapper: {
-        height: '110%',
+        height: '100%',
         width: '100%',
+        paddingTop: height * 0.07,
     },
     container: {
         padding: 16,
@@ -189,11 +193,11 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         width: "46%",
-        height: 350,
+        height: height * 0.4,
     },
     brochureImage: {
         width: "100%",
-        height: 200,
+        height: height * 0.2,
         marginBottom: 8,
         borderRadius: 10,
     },

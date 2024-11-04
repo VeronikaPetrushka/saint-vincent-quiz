@@ -1,5 +1,7 @@
 import React from 'react';
-import { Image, StyleSheet } from 'react-native';
+import { Image, StyleSheet, Dimensions } from 'react-native';
+
+const { height } = Dimensions.get('window');
 
 const Icons = ({ type }) => {
 
@@ -54,8 +56,8 @@ const styles = StyleSheet.create({
     height: 28,
   },
   plusIcon: {
-    width: 55,
-    height: 55,
+    width: height * 0.055,
+    height: height * 0.055
   },
 });
 

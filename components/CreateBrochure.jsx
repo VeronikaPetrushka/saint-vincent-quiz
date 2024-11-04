@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, Modal, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, Image, TouchableOpacity, StyleSheet, Modal, ScrollView, Dimensions } from 'react-native';
 import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Calendar } from 'react-native-calendars';
+
+const { height } = Dimensions.get('window');
 
 const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
     const [name, setName] = useState('');
@@ -106,7 +108,7 @@ const CreateBrochure = ({ visible, onClose, onSubmit, brochureToEdit }) => {
 
     const handleClose = () => {
         if (!brochureToEdit) {
-            clearFields(); // Reset fields when adding a new brochure
+            clearFields();
         }
         onClose();
     };

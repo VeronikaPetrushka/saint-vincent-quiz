@@ -1,15 +1,15 @@
-import { SafeAreaView, View } from "react-native"
+import { View } from "react-native"
 import MainMenu from "../components/MainMenu"
 import MenuPanel from "../components/MenuPanel"
 
 const MainMenuScreen = () => {
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <MainMenu />
             <View style={styles.menu}>
                 <MenuPanel />
             </View>
-        </SafeAreaView>
+        </View>
     )
 }; 
 
@@ -20,9 +20,9 @@ const styles = {
     },
 
     menu: {
-        position: 'fixed',
+        position: 'absolute',
         width: "100%",
-        top: -160
+        bottom: 15
     }
 }
 

@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { SafeAreaView, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { TouchableOpacity, View, StyleSheet, Alert } from "react-native";
 import { useNavigation, useRoute, useFocusEffect } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Icons from "./Icons";
@@ -71,7 +71,7 @@ const MenuPanel = () => {
     const isCurrent = (screen) => route.name === screen;
 
     return (
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <TouchableOpacity 
                 onPress={handleNavigateToStore} 
                 style={[styles.button, isCurrent('StoreScreen') && styles.activeButton]}
@@ -102,7 +102,7 @@ const MenuPanel = () => {
             >
                 <Icons type={settings} />
             </TouchableOpacity>
-        </SafeAreaView>
+        </View>
     );
 };
 

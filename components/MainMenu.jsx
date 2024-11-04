@@ -1,16 +1,17 @@
 import React, { useState, useEffect } from 'react';
-import { SafeAreaView, TouchableOpacity, Text, View, StyleSheet, ImageBackground } from 'react-native';
+import { TouchableOpacity, Text, View, StyleSheet, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import AboutModal from '../components/AboutModal';
 import Gift from './GiftModal';
 
+const { height } = Dimensions.get('window');
+
 const MainMenu = () => {
   const navigation = useNavigation();
   const [modalVisible, setModalVisible] = useState(false);
   const [isGiftVisible, setIsGiftVisible] = useState(true);
-
-  const openModal = () => setModalVisible(true);
+  
   const closeModal = async () => {
     setModalVisible(false);
     await AsyncStorage.setItem('lastGiftShown', new Date().toISOString());
@@ -47,7 +48,7 @@ const MainMenu = () => {
       resizeMode="cover"
     >
       <View style={styles.overlay}>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
           <Text style={styles.name}>{`Saint-Vincent \n Valley Adventures`}</Text>
           <View style={styles.btnsContainer}>
             <TouchableOpacity style={styles.btn} onPress={() => navigation.navigate('NewGameScreen')}>
@@ -63,7 +64,7 @@ const MainMenu = () => {
 
           <AboutModal visible={modalVisible} onClose={closeModal} />
           <Gift isVisible={isGiftVisible} onClose={() => setIsGiftVisible(false)} />
-        </SafeAreaView>
+        </View>
       </View>
     </ImageBackground>
   );
@@ -76,7 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-evenly',
     alignItems: 'center',
     paddingHorizontal: 30,
-    paddingVertical: 30,
+    paddingBottom: height * 0.2,
+    paddingTop: height * 0.07
   },
   backgroundImage: {
     width: '100%',

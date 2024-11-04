@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Alert, Modal, Dimensions } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useQuiz } from '../context/context.js';
 import UserProfile from './UserProfile.jsx';
+
+const { height } = Dimensions.get('window');
 
 const Settings = () => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -99,11 +101,13 @@ const Settings = () => {
 
 const styles = StyleSheet.create({
     container: {
-        height: '110%',
+        height: '100%',
         justifyContent: 'start',
         alignItems: 'center',
         backgroundColor: '#c7d3b8',
         padding: 20,
+        paddingTop: height * 0.07,
+        paddingBottom: height * 0.2
     },
     title: {
         fontSize: 24,

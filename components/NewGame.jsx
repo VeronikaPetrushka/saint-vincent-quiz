@@ -1,8 +1,15 @@
 import React from 'react';
-import { SafeAreaView, View, Text, TouchableOpacity, Image, ImageBackground } from "react-native";
+import { View, Text, TouchableOpacity, Image, ImageBackground, Dimensions } from "react-native";
 import { useNavigation } from '@react-navigation/native';
 import { useQuiz } from '../context/context.js';
 import quiz from '../constants/quiz.js';
+
+const { height } = Dimensions.get('window');
+
+const heightThreshold = 700;
+
+const heightContainer = height < heightThreshold ? height * 0.1 : height * 0.11;
+
 
 const NewGame = () => {
     const navigation = useNavigation();
@@ -31,7 +38,7 @@ const NewGame = () => {
         resizeMode="cover"
     >
         <View style={styles.overlay}>
-        <SafeAreaView style={styles.container}>
+        <View style={styles.container}>
             <View style={styles.topicBtnContainer}>
                 {quiz.map((item, index) => (
                     <TouchableOpacity 
@@ -64,7 +71,7 @@ const NewGame = () => {
                     <Text style={styles.modeBtnText}>Expert</Text>
                 </TouchableOpacity>
             </View>
-        </SafeAreaView>
+        </View>
             </View>
             </ImageBackground>
     );
@@ -78,12 +85,13 @@ const styles = {
         width: '100%',
         height: '100%',
         paddingHorizontal: 25,
-        paddingVertical: 30,
+        paddingBottom: height * 0.2,
+        paddingTop: height * 0.07
     },
 
     backgroundImage: {
         width: '100%',
-        height: '110%',
+        height: '100%',
         justifyContent: 'center',
     },
     overlay: {
@@ -99,11 +107,11 @@ const styles = {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'center',
-        marginBottom: 100,
+        marginBottom: height * 0.1,
     },
     buttonWrapper: {
-        width: 100,
-        height: 100,
+        width: heightContainer,
+        height: heightContainer,
         borderWidth: 1,
         borderColor: '#ccc',
         borderRadius: 10,

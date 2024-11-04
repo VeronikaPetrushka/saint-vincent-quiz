@@ -1,9 +1,11 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, ImageBackground, Dimensions } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import dailyQuiz from '../constants/dailyQuiz.js';
 import Icons from './Icons';
+
+const { height } = Dimensions.get('window');
 
 const DailyQuiz = () => {
     const navigation = useNavigation();
@@ -204,10 +206,11 @@ const styles = StyleSheet.create({
         padding: 20,
         width: '100%',
         height: '100%',
+        paddingTop: height * 0.07
     },
     backgroundImage: {
         width: '100%',
-        height: '110%',
+        height: '100%',
         justifyContent: 'center',
     },
     overlay: {

@@ -6,7 +6,8 @@ import { lettersGrid1, lettersGrid2, lettersGrid3, lettersGrid4, lettersGrid5 } 
 import { words1, words2, words3, words4, words5 } from '../constants/words.js';
 import Icons from './Icons.jsx';
 
-const { width } = Dimensions.get('window');
+const { height, width } = Dimensions.get('window');
+
 const gridSize = 12;
 const cellSize = (width - 80) / gridSize;
 const rowMargin = 2;
@@ -77,7 +78,6 @@ const QuizExpert = () => {
             await updateTotalBalance(newBalance);
             Alert.alert('Congratulations!', `You've found all words. Your new balance is ${newBalance}`);
         } else {
-            // Alert.alert('Game Over', 'You didn\'t find all the words. Try again!');
         }
         setIsFinished(true);
     };
@@ -258,9 +258,9 @@ const styles = StyleSheet.create({
         justifyContent: 'start',
         alignItems: 'center',
         padding: 10,
-        paddingVertical: 70,
+        paddingVertical: height * 0.07,
         marginTop: 20,
-        height: "105%",
+        height: "100%",
         width: "100%",
         backgroundColor: '#c7d3b8'
     },
@@ -306,7 +306,7 @@ const styles = StyleSheet.create({
         color: '#fff'
     },
     statsContainer: {
-        marginTop: 20,
+        marginTop: height * 0.015,
         alignItems: 'center',
     },
     statsText: {
@@ -316,10 +316,10 @@ const styles = StyleSheet.create({
     foundText: {
         fontSize: 20,
         fontWeight: 'bold',
-        marginBottom: 10
+        marginBottom: height * 0.01
     },
     foundWord: {
-        fontSize: 18,
+        fontSize: 17,
         color: 'green',
     },
     timerText: {
@@ -336,10 +336,10 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontWeight: 'bold',
         color: '#333333',
-        marginBottom: 200,
-        marginTop: 50,
+        marginBottom: height * 0.2,
+        marginTop: height * 0.05,
         width: '100%',
-        marginLeft: 50
+        marginLeft: height * 0.05
     },
     button: {
         backgroundColor: '#618e4d',
@@ -379,292 +379,3 @@ const styles = StyleSheet.create({
 });
 
 export default QuizExpert;
-
-
-
-
-//   
-
-// import React, { useState, useEffect } from 'react';
-// import { View, Text, StyleSheet, Dimensions, TouchableOpacity } from 'react-native';
-// import { useNavigation } from '@react-navigation/native';
-// import { lettersGrid1 } from '../constants/letterGrid.js';
-// import { words1 } from '../constants/words.js';
-
-// const { width } = Dimensions.get('window');
-// const gridSize = 12;
-// const cellSize = (width - 80) / gridSize;
-// const rowMargin = 2;
-
-// const QuizExpert = () => {
-//   const navigation = useNavigation();
-//   const [highlightedLetters, setHighlightedLetters] = useState([]);
-//   const [foundWords, setFoundWords] = useState(new Set());
-//   const [timer, setTimer] = useState(60);
-//   const [isFinished, setIsFinished] = useState(false);
-
-//   useEffect(() => {
-//     if (timer <= 0) {
-//       setIsFinished(true);
-//       return;
-//     }
-
-//     const interval = setInterval(() => {
-//       setTimer((prev) => prev - 1);
-//     }, 1000);
-
-//     return () => clearInterval(interval);
-//   }, [timer]);
-
-//   const resetGame = () => {
-//     setHighlightedLetters([]);
-//     setFoundWords(new Set());
-//     setTimer(60);
-//     setIsFinished(false);
-//   };
-
-//   const trackHighlightedLetters = (letter, rowIndex, colIndex) => {
-//     if (isFinished) return;
-
-//     const key = `${rowIndex}-${colIndex}`;
-//     console.log(`Tracking letter: ${letter} at (${rowIndex}, ${colIndex})`);
-
-//     if (highlightedLetters.some(item => item.key === key)) {
-//       console.log(`Unhighlighting letter: ${letter} at (${rowIndex}, ${colIndex})`);
-//       setHighlightedLetters(highlightedLetters.filter(item => item.key !== key));
-//     } else {
-//       const isCorrect = checkIfCorrectLetter(letter, rowIndex, colIndex);
-//       console.log(`Is letter correct? ${isCorrect}`);
-//       const newHighlightedLetters = [...highlightedLetters, { key, letter, isCorrect }];
-//       setHighlightedLetters(newHighlightedLetters);
-      
-//       checkForWords(newHighlightedLetters);
-//     }
-//   };
-
-//   const checkIfCorrectLetter = (letter, rowIndex, colIndex) => {
-//     const positions = getWordLetterPositions();
-//     const key = `${rowIndex}-${colIndex}`;
-//     return positions.some(pos => pos.key === key);
-//   };
-
-//   const checkForWords = (highlightedLetters) => {
-//     const highlightedLetterPositions = new Set(highlightedLetters.map(item => item.key));
-//     console.log('Highlighted letter positions:', highlightedLetterPositions);
-
-//     const newlyFoundWords = new Set();
-//     words1.forEach(word => {
-//       const positions = getWordLetterPositions(word);
-//       const isFullyHighlighted = positions.every(pos => highlightedLetterPositions.has(pos.key) && highlightedLetters.find(item => item.key === pos.key)?.isCorrect);
-      
-//       if (isFullyHighlighted && !foundWords.has(word)) {
-//         console.log(`Word found: ${word}`);
-//         newlyFoundWords.add(word);
-//       }
-//     });
-
-//     if (newlyFoundWords.size > 0) {
-//       setFoundWords(prevFoundWords => {
-//         const updatedFoundWords = new Set(prevFoundWords);
-//         newlyFoundWords.forEach(word => updatedFoundWords.add(word));
-//         console.log('Updated foundWords:', updatedFoundWords);
-//         return updatedFoundWords;
-//       });
-//     }
-//   };
-
-//   const getWordLetterPositions = (word) => {
-//     const positions = [];
-//     if (!lettersGrid1 || !Array.isArray(lettersGrid1)) {
-//       console.error('lettersGrid1 is not defined or not an array');
-//       return positions;
-//     }
-
-//     for (let r = 0; r < lettersGrid1.length; r++) {
-//       const rowStr = lettersGrid1[r].join('');
-//       const colStr = lettersGrid1.map(row => row[r]).join('');
-
-//       words1.forEach(word => {
-//         findWordInLine(rowStr, word, r, positions, true);
-//         findWordInLine(colStr, word, r, positions, false);
-//       });
-//     }
-//     console.log('Word letter positions:', positions);
-//     return positions;
-//   };
-
-//   const findWordInLine = (lineStr, word, index, positions, isRow) => {
-//     for (let i = 0; i <= lineStr.length - word.length; i++) {
-//       if (lineStr.substring(i, i + word.length) === word) {
-//         for (let j = 0; j < word.length; j++) {
-//           const key = isRow ? `${index}-${i + j}` : `${i + j}-${index}`;
-//           positions.push({ key, letter: word[j] });
-//         }
-//       }
-//     }
-//   };
-
-//   const getCellStyle = (letter, rowIndex, colIndex) => {
-//     const key = `${rowIndex}-${colIndex}`;
-//     const highlighted = highlightedLetters.find(item => item.key === key);
-
-//     if (highlighted) {
-//       return highlighted.isCorrect ? styles.correctCell : styles.incorrectCell;
-//     }
-
-//     return styles.cell;
-//   };
-
-//   const handleGoBack = () => {
-//     navigation.goBack();
-//   };
-
-//   const totalWords = words1.length;
-//   const foundCount = foundWords.size;
-//   const allWordsFound = foundCount === totalWords;
-
-//   console.log('Total Words:', totalWords);
-//   console.log('Found Count:', foundCount);
-//   console.log('Found Words:', Array.from(foundWords));
-
-//   return (
-//     <View style={styles.container}>
-//       {isFinished ? (
-//         <View style={styles.finishContainer}>
-//           <Text style={styles.finishText}>
-//             {allWordsFound ? "Congratulations! You've found all words." : "Time's up! Quiz is finished."}
-//           </Text>
-//           {!allWordsFound && (
-//             <TouchableOpacity style={styles.button} onPress={resetGame}>
-//               <Text style={styles.buttonText}>Try Again</Text>
-//             </TouchableOpacity>
-//           )}
-//           <TouchableOpacity style={styles.button} onPress={handleGoBack}>
-//             <Text style={styles.buttonText}>Go Back</Text>
-//           </TouchableOpacity>
-//         </View>
-//       ) : (
-//         <>
-//           {lettersGrid1.map((row, rowIndex) => (
-//             <View
-//               key={rowIndex}
-//               style={[styles.row, { marginBottom: rowIndex < lettersGrid1.length - 1 ? rowMargin : 0 }]}
-//             >
-//               {row.map((letter, colIndex) => (
-//                 <TouchableOpacity
-//                   key={colIndex}
-//                   style={[getCellStyle(letter, rowIndex, colIndex)]}
-//                   onPress={() => trackHighlightedLetters(letter, rowIndex, colIndex)}
-//                 >
-//                   <Text style={styles.letter}>{letter}</Text>
-//                 </TouchableOpacity>
-//               ))}
-//             </View>
-//           ))}
-//           <View style={styles.statsContainer}>
-//             <Text style={styles.statsText}>{foundCount} / {totalWords}</Text>
-//             <Text style={styles.statsText}>Found Words:</Text>
-//             {Array.from(foundWords).map((word, index) => (
-//               <Text key={index} style={styles.foundWord}>{word}</Text>
-//             ))}
-//             <Text style={styles.timerText}>Time Remaining: {timer}s</Text>
-//           </View>
-//         </>
-//       )}
-//     </View>
-//   );
-// };
-
-// const styles = StyleSheet.create({
-//   container: {
-//     justifyContent: 'start',
-//     alignItems: 'center',
-//     padding: 10,
-//     marginTop: 20,
-//     height: "100%",
-//     width: "100%",
-//   },
-//   row: {
-//     flexDirection: 'row',
-//   },
-//   cell: {
-//     width: cellSize,
-//     height: cellSize,
-//     borderRadius: cellSize / 2,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     borderWidth: 1,
-//     borderColor: '#ccc',
-//     backgroundColor: 'grey',
-//     margin: 2,
-//   },
-//   correctCell: {
-//     width: cellSize,
-//     height: cellSize,
-//     borderRadius: cellSize / 2,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     borderWidth: 1,
-//     backgroundColor: 'green',
-//     borderColor: 'green',
-//     margin: 2,
-//   },
-//   incorrectCell: {
-//     width: cellSize,
-//     height: cellSize,
-//     borderRadius: cellSize / 2,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     borderWidth: 1,
-//     backgroundColor: 'red',
-//     borderColor: 'red',
-//     margin: 2,
-//   },
-//   letter: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     color: '#fff',
-//   },
-//   statsContainer: {
-//     marginTop: 20,
-//     alignItems: 'center',
-//   },
-//   statsText: {
-//     fontSize: 16,
-//     fontWeight: 'bold',
-//   },
-//   foundWord: {
-//     fontSize: 16,
-//     color: 'green',
-//   },
-//   timerText: {
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//     marginTop: 10,
-//   },
-//   finishContainer: {
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     flex: 1,
-//   },
-//   finishText: {
-//     fontSize: 24,
-//     fontWeight: 'bold',
-//     color: 'red',
-//     marginBottom: 20,
-//   },
-//   button: {
-//     backgroundColor: 'blue',
-//     padding: 10,
-//     borderRadius: 5,
-//     margin: 5,
-//   },
-//   buttonText: {
-//     color: 'white',
-//     fontSize: 18,
-//     fontWeight: 'bold',
-//   },
-// });
-
-// export default QuizExpert;
-

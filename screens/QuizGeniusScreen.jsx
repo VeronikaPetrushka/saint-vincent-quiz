@@ -1,14 +1,14 @@
 import React from 'react';
-import { SafeAreaView } from "react-native";
+import { View } from "react-native";
 import QuizGenius from '../components/QuizGenius';
 
 const QuizGeniusScreen = () => {
 
 
     return (
-        <SafeAreaView>
+        <View>
             <QuizGenius />
-        </SafeAreaView>
+        </View>
     );
 };
 
